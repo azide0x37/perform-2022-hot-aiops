@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  become: no
+
+  tasks:
+
+  - name: 'print debug message'
+    debug:
+      msg: "test message"
