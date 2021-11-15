@@ -25,6 +25,11 @@ variable "acebox_user" {
   default     = "ace"
 }
 
+variable "acebox_password" {
+  description = "Initial password when ace-box is created"
+  default     = "dynatrace"
+}
+
 variable "acebox_os" {
   description = "Ubuntu version to use"
   default     = "ubuntu-minimal-1804-lts"

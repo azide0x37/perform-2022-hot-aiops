@@ -73,19 +73,24 @@ resource "google_compute_instance" "acebox" {
       "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config",
       "sudo service ssh restart",
       "sudo usermod -aG sudo ${var.acebox_user}",
-      "echo '${var.acebox_user}:${var.acebox_user}' | sudo chpasswd"
+      "echo '${var.acebox_user}:${var.acebox_password}' | sudo chpasswd"
     ]
   }
 
   provisioner "file" {
-    source      = "${path.module}/../install/setup.sh"
-    destination = "~/setup.sh"
+    source      = "${path.module}/../install/"
+    destination = "/tmp/"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../repos/"
+    destination = "~/"
   }
 
   provisioner "remote-exec" {
     inline = [
-        "sudo chmod +x ~/setup.sh",
-        "sudo DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env[each.key].id} DT_CLUSTER_TOKEN=${dynatrace_environment.vhot_env[each.key].api_token} shell_user=${var.acebox_user} DT_CREATE_ENV_TOKENS=true ~/setup.sh"
+        "sudo chmod +x /tmp/setup.sh",
+        "sudo DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env[each.key].id} DT_CLUSTER_TOKEN=${dynatrace_environment.vhot_env[each.key].api_token} shell_user=${var.acebox_user} DT_CREATE_ENV_TOKENS=true /tmp/setup.sh"
       ]
   }
 

@@ -15,10 +15,24 @@ nginx_service_type=ClusterIP
 nginx_ingress_service_type=NodePort
 login_user="admin"
 login_password="dynatrace"
+git_org="perform"
+git_repo="auto-remediation"
 git_user="dynatrace"
-git_pwd="dynatrace"
+git_password="dynatrace"
 git_email="ace@ace.ace"
 shell_user=${shell_user:="dtu_training"}
+
+################################
+#  HELPER FUNCTIONS            #
+################################
+
+wait-for-url() {
+    echo "Waiting for $1"
+    timeout -s TERM 300 bash -c \
+    'while [[ "$(curl -s -k -o /dev/null -w ''%{http_code}'' ${0})" != "200" ]];\
+    do echo "Waiting for ${0}" && sleep 5;\
+    done' ${1}
+}
 
 ##########################################
 #  INSTALL REQUIRED PACKAGES             #
@@ -26,7 +40,10 @@ shell_user=${shell_user:="dtu_training"}
 
 echo "Installing packages"
 apt-get update -y 
-apt-get install -y git vim build-essential
+apt-get install -y git vim build-essential software-properties-common
+add-apt-repository --yes --update ppa:ansible/ansible
+apt-get update -y
+apt-get install -y ansible
 snap refresh snapd
 snap install docker
 snap install jq
@@ -211,7 +228,7 @@ server {
           proxy_pass_request_headers  on;
           proxy_set_header   Host $host;
         }
-}' >/home/$shell_user/nginx/aiops-proxy.conf
+}' > /home/$shell_user/nginx/aiops-proxy.conf
 
 # start reverse proxy container
 docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --name reverseproxy nginx:1.18
@@ -232,6 +249,7 @@ helm upgrade --install dynatrace-service -n keptn https://github.com/keptn-contr
   --set dynatraceService.config.keptnApiUrl=$KEPTN_ENDPOINT --set dynatraceService.config.keptnBridgeUrl=$KEPTN_BRIDGE_URL --set dynatraceService.config.generateTaggingRules=true \
   --set dynatraceService.config.generateProblemNotifications=true --set dynatraceService.config.generateManagementZones=true --set dynatraceService.config.generateDashboards=true \
   --set dynatraceService.config.generateMetricEvents=true
+keptn configure monitoring dynatrace
 
 # Configure Dynatrace project
 echo 'apiVersion: "spec.keptn.sh/0.2.0"
@@ -260,8 +278,43 @@ attachRules:
       key: keptn_managed' > /home/$shell_user/keptn/dynatrace.conf.yaml
 keptn add-resource --project=dynatrace --stage=quality-gate --resource=/home/$shell_user/keptn/dynatrace.conf.yaml --resourceUri=dynatrace/dynatrace.conf.yaml
 
+##############################
+# Install Gitea + config     #
+##############################
+
+echo "Gitea - Install using Helm"
+gitea_domain=gitea.$ingress_domain
+helm upgrade gitea gitea-charts/gitea --install --wait --timeout 5m --version=$gitea_helm_chart_version --create-namespace --namespace=gitea \
+  --set image.tag=$gitea_image_tag --set ingress.enabled=true --set ingress.hosts[0].host=$gitea_domain,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix  \
+  --set gitea.config.service.REQUIRE_SIGNIN_VIEW=true --set gitea.admin.username=$git_user --set gitea.admin.password=$git_password --set gitea.admin.email=$git_email
+
+kubectl -n gitea rollout status deployment/gitea-memcached
+wait-for-url http://${gitea_domain}
+
+echo "Gitea - Create gitea PAT"
+gitea_pat=$(curl -s -k -d '{"name":"'$git_user'"}' -H "Content-Type: application/json" -X POST "http://$gitea_domain/api/v1/users/$git_user/tokens" -u $git_user:$git_password | jq -r .sha1)
+kubectl -n gitea create secret generic gitea-admin --from-literal=gitea_domain=$gitea_domain --from-literal=git_user=$git_user --from-literal=git_password=$git_password \
+  --from-literal=access_token=$gitea_pat
+
+echo "Gitea - Create org $git_org..."
+curl -s -k -d '{"full_name":"'$git_org'", "visibility":"public", "username":"'$git_org'"}' -H "Content-Type: application/json" -X POST "http://$gitea_domain/api/v1/orgs?access_token=$gitea_pat"
+echo "Gitea - Create repo $git_repo..."
+curl -s -k -d '{"name":"'$git_repo'", "private":false, "auto-init":true}' -H "Content-Type: application/json" -X POST "http://$gitea_domain/api/v1/org/$git_org/repos?access_token=$gitea_pat"
+echo "Gitea - Git config..."
+git config --global user.email $git_email && git config --global user.name $git_user && git config --global http.sslverify false
+
+echo "Gitea - Adding resources to repo $git_org/$git_repo"
+cd /home/$shell_user/$git_repo
+git init
+git remote add origin http://$git_user:$gitea_pat@$gitea_domain/$git_org/$git_repo.git
+git add .
+git commit -m "first commit"
+git push -u origin master
+git checkout .
+git pull
+
 ######################################
-#      INSTALL ANSIBLE AWX           #
+#   INSTALL + CONFIGURE ANSIBLE AWX  #
 ######################################
 
 echo "Deploy Ansible AWX"
@@ -298,21 +351,19 @@ spec:
   ingress_type: ingress
   hostname: awx.$ingress_domain
 EOF
-kubectl -n $AWX_NAMESPACE rollout status deploy/awx-aiops
+kubectl -n $AWX_NAMESPACE rollout status deployment/awx-aiops
 
-##############################
-# Install Gitea + config     #
-##############################
+echo "Running playbook to configure AWX"
+ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_domain ingress_domain=$ingress_domain awx_admin_username=$login_user dt_environment_url=$DT_ENV_URL \
+  dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http"
 
-echo "Gitea - Install using Helm"
-gitea_domain=gitea.$ingress_domain
-helm upgrade gitea gitea-charts/gitea --install --wait --timeout 5m --version=$gitea_helm_chart_version --create-namespace --namespace=gitea \
-  --set image.tag=$gitea_image_tag --set ingress.enabled=true --set ingress.hosts[0].host=$gitea_domain,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix  \
-  --set gitea.config.service.REQUIRE_SIGNIN_VIEW=true --set gitea.admin.username=$git_user --set gitea.admin.password=$git_pwd --set gitea.admin.email=$git_email
+##################################
+# Set user and file permissions  #
+##################################
 
-kubectl -n gitea rollout status deployment/gitea-memcached
-
+echo "Configuring environment for user $shell_user"
 chown -R $shell_user:$shell_user /home/$shell_user/.* /home/$shell_user/*
 chmod -R 755 /home/$shell_user/.* /home/$shell_user/*
 chmod 777 /var/run/docker.sock
+runuser -l $shell_user -c 'git config --global user.email $git_email && git config --global user.name $git_user && git config --global http.sslverify false'
 echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/$shell_user/.bashrc
