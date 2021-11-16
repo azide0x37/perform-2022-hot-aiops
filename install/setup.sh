@@ -144,6 +144,13 @@ helm repo add stable https://charts.helm.sh/stable
 helm repo add incubator https://charts.helm.sh/incubator
 helm repo add gitea-charts https://dl.gitea.io/charts/
 
+################################
+#       INSTALL ONEAGENT       #
+################################
+echo "Installing OneAgent"
+wget -nv -O /tmp/oneagent.sh "$DT_ENV_URL/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=$DT_PAAS_TOKEN&arch=x86&flavor=default"
+sh /tmp/oneagent.sh --set-app-log-content-access=true --set-system-logs-access-enabled=true --set-infra-only=false --set-host-group=easytravel-remediation
+
 ##########################################
 #  INSTALL KEPTN CLI AND CONTROL PLANE   #
 ##########################################
