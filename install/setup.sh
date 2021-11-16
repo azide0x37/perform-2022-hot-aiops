@@ -40,7 +40,9 @@ wait-for-url() {
 
 echo "Installing packages"
 apt-get update -y 
-apt-get install -y git vim build-essential software-properties-common
+apt-get install -y git vim build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
+ libatk1.0-0 libc6:amd64 libcairo2 libcups2 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 libxss1 xdg-utils \
+ libminizip-dev libgbm-dev libflac8
 add-apt-repository --yes --update ppa:ansible/ansible
 apt-get update -y
 apt-get install -y ansible
@@ -197,45 +199,103 @@ upstream gitea {
     server   172.17.0.1:32080;
 }
 
-server {
-        listen 80;
-        listen [::]:80;
-        server_name keptn.*;
-        location / {
-          proxy_pass  http://keptn/;
-          proxy_pass_request_headers  on;
-          proxy_set_header   Host $host;
-        }
+upstream angular {
+    server   172.17.0.1:9080;
+}
+upstream admin {
+    server   172.17.0.1:8094;
+}
+upstream classic {
+    server   172.17.0.1:8079;
+}
+upstream rest {
+    server   172.17.0.1:8091;
 }
 
 server {
-        listen 80;
-        listen [::]:80;
-        server_name awx.*;
-        location / {
-          proxy_pass  http://awx/;
-          proxy_pass_request_headers  on;
-          proxy_set_header   Host $host;
-        }
+    listen 80;
+    listen [::]:80;
+    server_name keptn.*;
+    location / {
+      proxy_pass  http://keptn/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
 }
 
 server {
-        listen 80;
-        listen [::]:80;
-        server_name gitea.*;
-        location / {
-          proxy_pass  http://gitea/;
-          proxy_pass_request_headers  on;
-          proxy_set_header   Host $host;
-        }
+    listen 80;
+    listen [::]:80;
+    server_name awx.*;
+    location / {
+      proxy_pass  http://awx/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name gitea.*;
+    location / {
+      proxy_pass  http://gitea/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name	angular.*;
+    
+    location / {
+      proxy_pass	http://angular/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name classic.*;
+    location / {
+      proxy_pass	http://classic/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name admin.*;
+    location / {
+      proxy_pass	http://admin/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+  listen 80;
+  listen [::]:80;
+  server_name rest.*;
+  location / {
+    proxy_pass	http://rest/;
+    proxy_pass_request_headers  on;
+    proxy_set_header   Host $host;
+  }
 }' > /home/$shell_user/nginx/aiops-proxy.conf
 
 # start reverse proxy container
 docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --name reverseproxy nginx:1.18
 
-##########################################
+###############################
 #      CONFIGURE KEPTN        #
-##########################################
+###############################
 
 echo "Installing dynatrace-service"
 mkdir -p /home/$shell_user/keptn
@@ -356,6 +416,55 @@ kubectl -n $AWX_NAMESPACE rollout status deployment/awx-aiops
 echo "Running playbook to configure AWX"
 ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_domain ingress_domain=$ingress_domain awx_admin_username=$login_user dt_environment_url=$DT_ENV_URL \
   dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http"
+
+##################################
+#      Install easyTravel        #
+##################################
+
+cd /tmp/
+wget -nv -O dynatrace-easytravel-linux-x86_64.jar http://dexya6d9gs5s.cloudfront.net/latest/dynatrace-easytravel-linux-x86_64.jar
+java -jar dynatrace-easytravel-linux-x86_64.jar -y
+rm dynatrace-easytravel-linux-x86_64.jar
+chmod 755 -R easytravel-2.0.0-x64
+chown $shell_user:$shell_user -R easytravel-2.0.0-x64
+ETCONFIG=/tmp/easytravel-2.0.0-x64/resources/easyTravelConfig.properties
+
+# Configuring EasyTravel Memory Settings, Angular Shop and Weblauncher.
+#sed -i 's,<configurationId>=.*,<configurationId>=value,g' $ETCONFIG
+sed -i 's,apmServerDefault=.*,apmServerDefault=APM,g' $ETCONFIG
+sed -i 's,config.frontendJavaopts=.*,config.frontendJavaopts=-Xmx320m,g' $ETCONFIG
+sed -i 's,config.backendJavaopts=.*,config.backendJavaopts=-Xmx320m,g' $ETCONFIG
+sed -i 's,config.autostart=.*,config.autostart=Standard with REST Service and Angular2 frontend,g' $ETCONFIG
+sed -i 's,config.autostartGroup=.*,config.autostartGroup=UEM,g' $ETCONFIG
+sed -i 's,config.baseLoadB2BRatio=.*,config.baseLoadB2BRatio=0,g' $ETCONFIG
+sed -i 's,config.baseLoadCustomerRatio=.*,config.baseLoadCustomerRatio=0.1,g' $ETCONFIG
+sed -i 's,config.baseLoadMobileNativeRatio=.*,config.baseLoadMobileNativeRatio=0,g' $ETCONFIG
+sed -i 's,config.baseLoadMobileBrowserRatio=.*,config.baseLoadMobileBrowserRatio=0,g' $ETCONFIG
+sed -i 's,config.baseLoadHotDealServiceRatio=.*,config.baseLoadHotDealServiceRatio=1,g' $ETCONFIG
+sed -i 's,config.baseLoadIotDevicesRatio=.*,config.baseLoadIotDevicesRatio=0,g' $ETCONFIG
+sed -i 's,config.baseLoadHeadlessAngularRatio=.*,config.baseLoadHeadlessAngularRatio=0.1,g' $ETCONFIG
+sed -i 's,config.baseLoadHeadlessMobileAngularRatio=.*,config.baseLoadHeadlessMobileAngularRatio=0.1,g' $ETCONFIG
+sed -i 's,config.maximumChromeDrivers=.*,config.maximumChromeDrivers=1,g' $ETCONFIG
+sed -i 's,config.maximumChromeDriversMobile=.*,config.maximumChromeDriversMobile=1,g' $ETCONFIG
+sed -i 's,config.reUseChromeDriverFrequency=.*,config.reUseChromeDriverFrequency=1,g' $ETCONFIG
+
+(
+cat <<-EOF
+  [Unit]
+  Description=easytravel launcher
+  Requires=network-online.target
+  After=network-online.target
+  [Service]
+  Restart=on-failure
+  ExecStart=/tmp/easytravel-2.0.0-x64/runEasyTravelNoGUI.sh
+  ExecReload=/bin/kill -HUP $MAINPID
+  [Install]
+  WantedBy=multi-user.target
+EOF
+) | tee /etc/systemd/system/easytravel.service
+
+systemctl enable easytravel.service
+systemctl start easytravel
 
 ##################################
 # Set user and file permissions  #
