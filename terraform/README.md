@@ -27,7 +27,7 @@ A GCP account is needed.
    It needs to contain the following as a minimum:
 
     ```hcl
-    name_prefix          = "example-vhot-monaco"
+    name_prefix          = "example-hot-aiops""
     dt_cluster_url       = "https://{id}.managed-sprint.dynalabs.io" 
     dt_cluster_api_token = "{your_cluser_api_token}"
     gcloud_project       = "myGCPProject" # GCP Project you want to use

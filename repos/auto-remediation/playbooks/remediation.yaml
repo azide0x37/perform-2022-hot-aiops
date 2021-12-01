@@ -1,9 +1,25 @@
 ---
-- hosts: localhost
-  become: no
+- hosts: easyTravel
+  become: yes
 
   tasks:
 
-  - name: 'print debug message'
-    debug:
-      msg: "test message"
+  - name: 'push comment to dynatrace'
+    uri:
+      url: "{{ dynatrace_environment_url }}{{ dt_comments_api }}{{ dt_pid }}/comments"
+      method: POST
+      validate_certs: no
+      use_proxy: no
+      headers:
+        Content-Type: "application/json"
+        Authorization: "Api-token {{ dynatrace_api_token }}"
+      body:
+        comment: 'Ansible Play Started ({{ tower_job_id | default("0") }}): {{ awx_template_name }} - Remediation started -- [Ansible Job]({{ awx_dns_name }}/#/jobs/playbook/{{ tower_job_id | default("0") }})'
+        user: '{{ dt_comment_user }}'
+        context: '{{ dt_comment_context }}'
+      body_format: json
+
+  - name: restart easyTravel service
+    service:
+      name: easytravel
+      state: restarted

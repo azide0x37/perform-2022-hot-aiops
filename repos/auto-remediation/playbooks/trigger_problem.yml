@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  become: no
+
+  tasks:
+
+  - name: Enable memory leak in the business backend
+    uri:
+      url: "{{ et_rest_url }}/services/ConfigurationService/setPluginEnabled?name=MediumMemoryLeak&enabled=true"
+      method: GET
+      status_code: [200, 201, 202]
+      validate_certs: no

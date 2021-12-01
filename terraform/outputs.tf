@@ -13,5 +13,5 @@ output "dt_env_url" {
 }
 
 output "login_info" {
-  value = "Users without key access can login with username: ${var.acebox_user}, password: ${var.acebox_password}"
+  value = "Users without ssh key access can login with username: ${var.acebox_user}, password: ${var.acebox_password}"
 }

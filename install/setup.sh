@@ -1,9 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 #########################################
 #  VARIABLES                            #
 #########################################
 echo "Starting installation"
-keptn_version=0.10.0
+keptn_version=0.11.2
 domain="nip.io"
 dynatrace_operator_version=v0.2.2
 dynatrace_service_version=0.17.1
@@ -21,9 +22,10 @@ git_user="dynatrace"
 git_password="dynatrace"
 git_email="ace@ace.ace"
 shell_user=${shell_user:="dtu_training"}
+shell_password=${shell_password:="dynatrace"}
 
 ################################
-#  HELPER FUNCTIONS            #
+#      HELPER FUNCTIONS        #
 ################################
 
 wait-for-url() {
@@ -40,21 +42,29 @@ wait-for-url() {
 
 echo "Installing packages"
 apt-get update -y 
-apt-get install -y git vim build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
+apt-get install -y git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
  libatk1.0-0 libc6:amd64 libcairo2 libcups2 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 libxss1 xdg-utils \
  libminizip-dev libgbm-dev libflac8
 add-apt-repository --yes --update ppa:ansible/ansible
 apt-get update -y
 apt-get install -y ansible
 snap refresh snapd
-snap install docker
-snap install jq
+apt install docker.io -y
+echo '{
+"log-driver": "json-file",
+"log-opts": {
+  "max-size": "10m",
+  "max-file": "3"
+  }
+}' > /etc/docker/daemon.json
+service docker start
+usermod -a -G docker $shell_user
 
 #################################
 # Create Dynatrace Tokens       #
 #################################
 
-$DT_CREATE_ENV_TOKENS=${DT_CREATE_ENV_TOKENS:="false"}
+DT_CREATE_ENV_TOKENS=${DT_CREATE_ENV_TOKENS:="false"}
 echo "Create Dynatrace Tokens? : $DT_CREATE_ENV_TOKENS"
 
 if [ "$DT_CREATE_ENV_TOKENS" != "false" ]; then
@@ -122,7 +132,7 @@ PRIVATE_IP=$(hostname -i)
 echo "Ingress domain: $ingress_domain"
 
 ##############################
-# Install k3s and Helm       #
+#    Install k3s and Helm    #
 ##############################
 
 echo "Installing k3s"
@@ -139,7 +149,7 @@ cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 echo "Installing Helm"
-snap install helm --classic
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm repo add stable https://charts.helm.sh/stable
 helm repo add incubator https://charts.helm.sh/incubator
 helm repo add gitea-charts https://dl.gitea.io/charts/
@@ -209,12 +219,11 @@ upstream gitea {
 upstream angular {
     server   172.17.0.1:9080;
 }
-upstream admin {
-    server   172.17.0.1:8094;
-}
+
 upstream classic {
     server   172.17.0.1:8079;
 }
+
 upstream rest {
     server   172.17.0.1:8091;
 }
@@ -276,17 +285,6 @@ server {
 }
 
 server {
-    listen 80;
-    listen [::]:80;
-    server_name admin.*;
-    location / {
-      proxy_pass	http://admin/;
-      proxy_pass_request_headers  on;
-      proxy_set_header   Host $host;
-    }
-}
-
-server {
   listen 80;
   listen [::]:80;
   server_name rest.*;
@@ -305,7 +303,8 @@ docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --name r
 ###############################
 
 echo "Installing dynatrace-service"
-mkdir -p /home/$shell_user/keptn
+mkdir -p /home/$shell_user/keptn/dynatrace
+mkdir -p /home/$shell_user/keptn/easytravel
 KEPTN_ENDPOINT=http://$(kubectl get ingress -ojsonpath='{.items.*.spec.rules.*.host}' -n keptn)/api
 KEPTN_BRIDGE_URL=http://$(kubectl get ingress -ojsonpath='{.items.*.spec.rules.*.host}' -n keptn)/bridge
 KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath='{.data.keptn-api-token}' | base64 --decode)
@@ -319,16 +318,16 @@ helm upgrade --install dynatrace-service -n keptn https://github.com/keptn-contr
 keptn configure monitoring dynatrace
 
 # Configure Dynatrace project
-echo 'apiVersion: "spec.keptn.sh/0.2.0"
+echo 'apiVersion: "spec.keptn.sh/0.2.2"
 kind: "Shipyard"
 metadata:
   name: "shipyard-quality-gates"
 spec:
   stages:
-    - name: "quality-gate"' > /home/$shell_user/keptn/shipyard.yaml
+    - name: "quality-gate"' > /home/$shell_user/keptn/dynatrace/shipyard.yaml
 kubectl create secret -n keptn generic bridge-credentials --from-literal="BASIC_AUTH_USERNAME=$login_user" --from-literal="BASIC_AUTH_PASSWORD=$login_password" -oyaml --dry-run=client | kubectl replace -f -
 kubectl -n keptn rollout restart deployment bridge
-keptn create project dynatrace --shipyard=/home/$shell_user/keptn/shipyard.yaml
+keptn create project dynatrace --shipyard=/home/$shell_user/keptn/dynatrace/shipyard.yaml
 
 echo '---
 spec_version: '0.1.0'
@@ -342,8 +341,8 @@ attachRules:
       key: keptn_service
       value: $SERVICE
     - context: CONTEXTLESS
-      key: keptn_managed' > /home/$shell_user/keptn/dynatrace.conf.yaml
-keptn add-resource --project=dynatrace --stage=quality-gate --resource=/home/$shell_user/keptn/dynatrace.conf.yaml --resourceUri=dynatrace/dynatrace.conf.yaml
+      key: keptn_managed' > /home/$shell_user/keptn/dynatrace/dynatrace.conf.yaml
+keptn add-resource --project=dynatrace --stage=quality-gate --resource=/home/$shell_user/keptn/dynatrace/dynatrace.conf.yaml --resourceUri=dynatrace/dynatrace.conf.yaml
 
 ##############################
 # Install Gitea + config     #
@@ -418,11 +417,12 @@ spec:
   ingress_type: ingress
   hostname: awx.$ingress_domain
 EOF
+sleep 10
 kubectl -n $AWX_NAMESPACE rollout status deployment/awx-aiops
 
 echo "Running playbook to configure AWX"
 ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_domain ingress_domain=$ingress_domain awx_admin_username=$login_user dt_environment_url=$DT_ENV_URL \
-  dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http"
+  dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http shell_user=$shell_user shell_password=$shell_password keptn_api_token="
 
 ##################################
 #      Install easyTravel        #
@@ -436,7 +436,7 @@ chmod 755 -R easytravel-2.0.0-x64
 chown $shell_user:$shell_user -R easytravel-2.0.0-x64
 ETCONFIG=/tmp/easytravel-2.0.0-x64/resources/easyTravelConfig.properties
 
-# Configuring EasyTravel Memory Settings, Angular Shop and Weblauncher.
+# Configuring EasyTravel Memory Settings, Angular Shop and Weblauncher
 #sed -i 's,<configurationId>=.*,<configurationId>=value,g' $ETCONFIG
 sed -i 's,apmServerDefault=.*,apmServerDefault=APM,g' $ETCONFIG
 sed -i 's,config.frontendJavaopts=.*,config.frontendJavaopts=-Xmx320m,g' $ETCONFIG
@@ -455,9 +455,11 @@ sed -i 's,config.maximumChromeDrivers=.*,config.maximumChromeDrivers=1,g' $ETCON
 sed -i 's,config.maximumChromeDriversMobile=.*,config.maximumChromeDriversMobile=1,g' $ETCONFIG
 sed -i 's,config.reUseChromeDriverFrequency=.*,config.reUseChromeDriverFrequency=1,g' $ETCONFIG
 
-(
-cat <<-EOF
-  [Unit]
+# Disable broadcast messages
+#sed -i 's,#ForwardToWall=.*,ForwardToWall=no,g' /etc/systemd/journald.conf
+#sed -i 's,#ForwardToConsole=.*,ForwardToConsole=no,g' /etc/systemd/journald.conf
+
+echo '  [Unit]
   Description=easytravel launcher
   Requires=network-online.target
   After=network-online.target
@@ -466,12 +468,127 @@ cat <<-EOF
   ExecStart=/tmp/easytravel-2.0.0-x64/runEasyTravelNoGUI.sh
   ExecReload=/bin/kill -HUP $MAINPID
   [Install]
-  WantedBy=multi-user.target
-EOF
-) | tee /etc/systemd/system/easytravel.service
+  WantedBy=multi-user.target' > /etc/systemd/system/easytravel.service
 
 systemctl enable easytravel.service
 systemctl start easytravel
+
+##################################
+#      Remediation lab setup     #
+##################################
+
+echo "Gitea - Create repo easytravel..."
+curl -s -k -d '{"name":"easytravel", "private":false, "auto-init":true}' -H "Content-Type: application/json" -X POST "http://$gitea_domain/api/v1/org/$git_org/repos?access_token=$gitea_pat"
+
+# Configure easytravel project
+echo 'apiVersion: "spec.keptn.sh/0.2.2"
+kind: "Shipyard"
+metadata:
+  name: "shipyard-easytravel"
+spec:
+  stages:
+    - name: "production"
+      sequences:
+        - name: "remediation"
+          triggeredOn:
+            - event: "production.remediation.finished"
+              selector:
+                match:
+                  evaluation.result: "fail"
+          tasks:
+            - name: "action"
+            - name: "evaluation"
+              triggeredAfter: "10m"
+              properties:
+                timeframe: "10m"' > /home/$shell_user/keptn/easytravel/shipyard.yaml
+keptn create project easytravel --shipyard=/home/$shell_user/keptn/easytravel/shipyard.yaml --git-user=$git_user --git-token=$gitea_pat --git-remote-url=http://$gitea_domain/$git_org/easytravel.git
+
+# Create catch all service for dynatrace detected problems
+keptn create service allproblems --project=easytravel
+
+# Update keptn problem notification
+#DT_API_TOKEN=$(kubectl get secret dynatrace -n keptn -ojsonpath='{.data.DT_API_TOKEN}' | base64 --decode)
+#DT_ENV_URL=$(kubectl get secret dynatrace -n keptn -ojsonpath='{.data.DT_TENANT}' | base64 --decode)
+
+# Update keptn problem notification to forward problems to easytravel project
+
+PROBLEM_NOTIFICATION_ID=$(curl -k -s --location --request GET "${DT_ENV_URL}/api/config/v1/notifications" \
+  --header "Authorization: Api-Token $DT_API_TOKEN" \
+  --header "Content-Type: application/json" | jq -r .values[].id)
+
+ALERTING_PROFILE_ID=$(curl -k -s --location --request GET "${DT_ENV_URL}/api/config/v1/notifications/$PROBLEM_NOTIFICATION_ID" \
+  --header "Authorization: Api-Token $DT_API_TOKEN" \
+  --header "Content-Type: application/json" | jq -r .alertingProfile)
+
+keptn_notification_body=$(cat <<EOF
+{
+    "type": "WEBHOOK",
+    "name": "Keptn Problem Notification",
+    "alertingProfile": "$ALERTING_PROFILE_ID",
+    "active": true,
+    "url": "http://keptn.$ingress_domain/api/v1/event",
+    "acceptAnyCertificate": true,
+    "payload": "{\n    \"specversion\":\"1.0\",\n    \"shkeptncontext\":\"{PID}\",\n    \"type\":\"sh.keptn.events.problem\",\n    \"source\":\"dynatrace\",\n    \"id\":\"{PID}\",\n    \"time\":\"\",\n    \"contenttype\":\"application/json\",\n    \"data\": {\n        \"State\":\"{State}\",\n        \"ProblemID\":\"{ProblemID}\",\n        \"PID\":\"{PID}\",\n        \"ProblemTitle\":\"{ProblemTitle}\",\n        \"ProblemURL\":\"{ProblemURL}\",\n        \"ProblemDetails\":{ProblemDetailsJSON},\n        \"Tags\":\"{Tags}\",\n        \"ImpactedEntities\":{ImpactedEntities},\n        \"ImpactedEntity\":\"{ImpactedEntity}\",\n        \"KeptnProject\" : \"easytravel\",\n        \"KeptnService\" : \"allproblems\",\n        \"KeptnStage\" : \"production\"\n    }\n}",
+    "headers": [
+        {
+            "name": "x-token",
+            "value": "$KEPTN_API_TOKEN"
+        },
+        {
+            "name": "Content-Type",
+            "value": "application/cloudevents+json"
+        }
+    ],
+    "notifyEventMergesEnabled": false
+}
+EOF
+)
+
+curl -k -s --location --request PUT "${DT_ENV_URL}/api/config/v1/notifications/$PROBLEM_NOTIFICATION_ID" \
+  --header "Authorization: Api-Token $DT_API_TOKEN" \
+  --header "Content-Type: application/json" \
+  --data-raw "${keptn_notification_body}"
+
+echo 'apiVersion: spec.keptn.sh/0.1.4
+kind: Remediation
+metadata:
+  name: easytravel-remediation
+spec:
+  remediations:
+    - problemType: Memory resources exhausted on Process com.dynatrace.easytravel.business.backend.jar
+      actionsOnOpen:
+        - action: webhook
+          name: Ansible AWX remediation
+          description: trigger ansible playbook' > /home/$shell_user/keptn/easytravel/remediation.yaml
+
+keptn add-resource --project=easytravel --stage=production --service=allproblems --resource=/home/$shell_user/keptn/easytravel/remediation.yaml --resourceUri=remediation.yaml
+
+awx_token=$(echo -n $login_user:$login_password | base64)
+keptn create secret awx --from-literal="token=$awx_token" --scope=keptn-webhook-service
+
+(
+cat <<EOF
+apiVersion: webhookconfig.keptn.sh/v1alpha1
+kind: WebhookConfig
+metadata:
+  name: webhook-configuration
+spec:
+  webhooks:
+    - type: sh.keptn.event.action.*
+      sendFinished: false
+      requests:
+        - "curl --header 'Authorization: Basic {{.env.secret_awx_token}}'
+          --header 'Content-Type: application/json' --request POST --data
+          '{\"extra_vars\":{\"shKeptnContext\":\"{{.shkeptncontext}}\"}}'
+          http://awx.$ingress_domain/api/v2/job_templates/9/launch/"
+      envFrom:
+        - name: secret_awx_token
+          secretRef:
+            name: awx
+            key: token
+      subscriptionID: 
+EOF
+) | tee /home/$shell_user/keptn/easytravel/webhook.yaml
 
 ##################################
 # Set user and file permissions  #
@@ -480,6 +597,5 @@ systemctl start easytravel
 echo "Configuring environment for user $shell_user"
 chown -R $shell_user:$shell_user /home/$shell_user/.* /home/$shell_user/*
 chmod -R 755 /home/$shell_user/.* /home/$shell_user/*
-chmod 777 /var/run/docker.sock
 runuser -l $shell_user -c 'git config --global user.email $git_email && git config --global user.name $git_user && git config --global http.sslverify false'
 echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/$shell_user/.bashrc

@@ -90,7 +90,7 @@ resource "google_compute_instance" "acebox" {
   provisioner "remote-exec" {
     inline = [
         "sudo chmod +x /tmp/setup.sh",
-        "sudo DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env[each.key].id} DT_CLUSTER_TOKEN=${dynatrace_environment.vhot_env[each.key].api_token} shell_user=${var.acebox_user} DT_CREATE_ENV_TOKENS=true /tmp/setup.sh"
+        "sudo DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env[each.key].id} DT_CLUSTER_TOKEN=${dynatrace_environment.vhot_env[each.key].api_token} shell_user=${var.acebox_user} shell_password=${var.acebox_password} DT_CREATE_ENV_TOKENS=true /tmp/setup.sh"
       ]
   }
 
