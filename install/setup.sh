@@ -6,6 +6,8 @@
 echo "Starting installation"
 keptn_version=0.11.2
 domain="nip.io"
+source_repo="https://github.com/dynatrace-ace/perform-2022-hot-aiops.git"
+clone_folder=perform-2022-hot-aiops
 dynatrace_operator_version=v0.2.2
 dynatrace_service_version=0.17.1
 ansible_operator_version=0.13.0
@@ -58,6 +60,14 @@ echo '{
 }' > /etc/docker/daemon.json
 service docker start
 usermod -a -G docker $shell_user
+
+##############################
+#       Clone repo           #
+##############################
+#mkdir -p /tmp/$clone_folder
+#git clone "$source_repo" /tmp/$clone_folder
+#cp -R /tmp/$clone_folder/install/* /tmp/
+#cp -R /tmp/$clone_folder/repos/auto-remediation/ /home/$shell_user
 
 #################################
 # Create Dynatrace Tokens       #
