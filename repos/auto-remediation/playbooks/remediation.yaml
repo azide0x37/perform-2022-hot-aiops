@@ -23,3 +23,38 @@
     service:
       name: easytravel
       state: restarted
+
+  - name: 'Ensure easytravel service is in started state'
+    service:
+      name: easytravel
+      state: started
+    register: easytravelserviceresponse
+
+  - name: set remediation status
+    set_fact:
+      remediation_status: succeeded
+      remediation_result: pass
+    when: easytravelserviceresponse.state|default("") == "started"
+
+  - name: push interactive event to keptn
+    uri:
+      url: "{{ keptn_url }}{{ keptn_events_api }}"
+      method: POST
+      validate_certs: no
+      use_proxy: no
+      headers:
+        Content-Type: "application/cloudevents+json"
+        x-token: "{{ keptn_api_token }}"
+      body:
+        data:
+          project: "{{ keptn_project }}"
+          stage: "{{ keptn_stage }}"
+          service: "{{ keptn_service }}"
+          status: "{{ remediation_status|default('errored') }}"
+          result: "{{ remediation_result|default('fail') }}"
+        source: AWX
+        specversion: '1.0'
+        type: sh.keptn.event.mytask-interactive.finished
+        shkeptncontext: "{{ sh_keptn_context }}"
+        triggeredid: "{{ event_id }}"
+      body_format: json
