@@ -398,7 +398,7 @@
     delay: 5
 
   - set_fact:
-      remediation_template_url: "{{ awx_url }}/#/templates/job_template/{{ remediation_template_result.json.id }}"
+      remediation_template_url: "{{ awx_url }}/api/v2/job_templates/{{ remediation_template_result.json.id }}/launch/"
 
   - name: create template for problem trigger
     uri:
@@ -491,6 +491,6 @@
     retries: 10
     delay: 1
 
-  - name: print remediation template id
+  - name: print remediation template url
     debug:
-      msg: "Ansible has been configured successfully! Copy the following URL to set it as an Ansible Job URL in the Dynatrace notification settings: {{ remediation_template_url }}"
+      msg: "Ansible has been configured successfully! Copy the following URL to set it as the endpoint on the webhook service config: {{ remediation_template_url }}"

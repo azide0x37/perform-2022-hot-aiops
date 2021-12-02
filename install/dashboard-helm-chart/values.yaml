@@ -1,0 +1,11 @@
+#nodeport: 30001
+replicasnum: 1
+domain: DOMAIN_PLACEHOLDER
+authb64encoded: AUTH_PLACEHOLDER
+
+image: "localhost:32000/dashboard"
+env: {}
+envSecrets: {}
+
+ingress:
+  class: nginx

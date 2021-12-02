@@ -44,11 +44,10 @@ echo "Installing packages"
 apt-get update -y 
 apt-get install -y git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
  libatk1.0-0 libc6:amd64 libcairo2 libcups2 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 libxss1 xdg-utils \
- libminizip-dev libgbm-dev libflac8
+ libminizip-dev libgbm-dev libflac8 apache2-utils
 add-apt-repository --yes --update ppa:ansible/ansible
 apt-get update -y
 apt-get install -y ansible
-snap refresh snapd
 apt install docker.io -y
 echo '{
 "log-driver": "json-file",
@@ -170,7 +169,7 @@ helm upgrade keptn keptn --install --wait --timeout 10m --version=$keptn_version
   --set=continuous-delivery.enabled=$continuous_delivery,control-plane.apiGatewayNginx.type=$nginx_service_type --repo="https://storage.googleapis.com/keptn-installer"
 
 ##############################
-# Install ingress-nginx      #
+#   Install ingress-nginx    #
 ##############################
 
 echo "Installing ingress-nginx"
@@ -178,25 +177,6 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace --wait --version 3.30.0 \
   --set=controller.service.type=$nginx_ingress_service_type --set=controller.service.nodePorts.http=32080 --set=controller.service.nodePorts.https=32443
-
-# Apply keptn ingress-manifest
-kubectl apply -f - <<EOF
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: nginx
-  name: keptn
-  namespace: keptn
-spec:
-  rules:
-  - host: keptn.$ingress_domain
-    http:
-      paths:
-      - backend:
-          serviceName: api-gateway-nginx
-          servicePort: 80
-EOF
 
 ##########################################
 #      INSTALL NGINX REVERSE PROXY       #
@@ -213,6 +193,10 @@ upstream awx {
 }
 
 upstream gitea {
+    server   172.17.0.1:32080;
+}
+
+upstream dashboard {
     server   172.17.0.1:32080;
 }
 
@@ -264,6 +248,17 @@ server {
 server {
     listen 80;
     listen [::]:80;
+    server_name dashboard.*;
+    location / {
+      proxy_pass  http://dashboard/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
     server_name	angular.*;
     
     location / {
@@ -301,6 +296,25 @@ docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --name r
 ###############################
 #      CONFIGURE KEPTN        #
 ###############################
+
+echo "setup keptn ingress"
+kubectl apply -f - <<EOF
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: keptn
+  namespace: keptn
+spec:
+  rules:
+  - host: keptn.$ingress_domain
+    http:
+      paths:
+      - backend:
+          serviceName: api-gateway-nginx
+          servicePort: 80
+EOF
 
 echo "Installing dynatrace-service"
 mkdir -p /home/$shell_user/keptn/dynatrace
@@ -422,7 +436,7 @@ kubectl -n $AWX_NAMESPACE rollout status deployment/awx-aiops
 
 echo "Running playbook to configure AWX"
 ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_domain ingress_domain=$ingress_domain awx_admin_username=$login_user dt_environment_url=$DT_ENV_URL \
-  dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http shell_user=$shell_user shell_password=$shell_password keptn_api_token="
+  dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http shell_user=$shell_user shell_password=$shell_password keptn_api_token=$KEPTN_API_TOKEN"
 
 ##################################
 #      Install easyTravel        #
@@ -473,6 +487,19 @@ echo '  [Unit]
 systemctl enable easytravel.service
 systemctl start easytravel
 
+#password_encrypted=$(echo "$login_user:$(openssl passwd -apr1 $login_password)")
+echo "Genererate auth string for dashboard"
+htpasswd -b -c /tmp/auth $login_user $login_password
+authb64encoded=$(cat /tmp/auth | base64)
+
+helm upgrade -i ace-dashboard /tmp/dashboard-helm-chart --namespace dashboard --create-namespace --set domain=$ingress_domain \
+  --set image=dynatraceace/ace-box-dashboard:1.0.0 --set env.GITEA_URL=http://$gitea_domain --set env.GITEA_USER=$git_user \
+  --set env.GITEA_PASSWORD=$git_password --set env.GITEA_PAT=$gitea_pat --set env.AWX_URL=http://awx.$ingress_domain \
+  --set env.AWX_USER=$login_user --set env.AWX_PASSWORD=$login_password --set env.KEPTN_API_URL=$KEPTN_ENDPOINT \
+  --set env.KEPTN_API_TOKEN=$KEPTN_API_TOKEN --set env.KEPTN_BRIDGE_URL=$KEPTN_BRIDGE_URL --set env.KEPTN_BRIDGE_USER=$login_user \
+  --set env.KEPTN_BRIDGE_PASSWORD=$login_password --set env.DT_TENANT_URL=$DT_ENV_URL --set authb64encoded=$authb64encoded \
+  --set env.SIMPLENODEAPP_URL_STAGING=http://angular.$ingress_domain --set env.SIMPLENODEAPP_URL_PRODUCTION=http://classic.$ingress_domain 
+
 ##################################
 #      Remediation lab setup     #
 ##################################
@@ -498,9 +525,9 @@ spec:
           tasks:
             - name: "action"
             - name: "evaluation"
-              triggeredAfter: "10m"
+              triggeredAfter: "5m"
               properties:
-                timeframe: "10m"' > /home/$shell_user/keptn/easytravel/shipyard.yaml
+                timeframe: "5m"' > /home/$shell_user/keptn/easytravel/shipyard.yaml
 keptn create project easytravel --shipyard=/home/$shell_user/keptn/easytravel/shipyard.yaml --git-user=$git_user --git-token=$gitea_pat --git-remote-url=http://$gitea_domain/$git_org/easytravel.git
 
 # Create catch all service for dynatrace detected problems
@@ -549,20 +576,6 @@ curl -k -s --location --request PUT "${DT_ENV_URL}/api/config/v1/notifications/$
   --header "Content-Type: application/json" \
   --data-raw "${keptn_notification_body}"
 
-echo 'apiVersion: spec.keptn.sh/0.1.4
-kind: Remediation
-metadata:
-  name: easytravel-remediation
-spec:
-  remediations:
-    - problemType: Memory resources exhausted on Process com.dynatrace.easytravel.business.backend.jar
-      actionsOnOpen:
-        - action: webhook
-          name: Ansible AWX remediation
-          description: trigger ansible playbook' > /home/$shell_user/keptn/easytravel/remediation.yaml
-
-keptn add-resource --project=easytravel --stage=production --service=allproblems --resource=/home/$shell_user/keptn/easytravel/remediation.yaml --resourceUri=remediation.yaml
-
 awx_token=$(echo -n $login_user:$login_password | base64)
 keptn create secret awx --from-literal="token=$awx_token" --scope=keptn-webhook-service
 
@@ -575,24 +588,24 @@ metadata:
 spec:
   webhooks:
     - type: sh.keptn.event.action.*
-      sendFinished: false
       requests:
         - "curl --header 'Authorization: Basic {{.env.secret_awx_token}}'
           --header 'Content-Type: application/json' --request POST --data
-          '{\"extra_vars\":{\"shKeptnContext\":\"{{.shkeptncontext}}\"}}'
+          '{\"extra_vars\":{\"event_id\":\"{{.id}}\",\"type\":\"{{.type}}\",\"sh_keptn_context\":\"{{.shkeptncontext}}\",\"dt_pid\":\"{{.data.problem.PID}}\",\"keptn_project\":\"{{.data.project}}\",\"keptn_service\":\"{{.data.service}}\",\"keptn_stage\":\"{{.data.stage}}\"}}'
           http://awx.$ingress_domain/api/v2/job_templates/9/launch/"
       envFrom:
         - name: secret_awx_token
           secretRef:
             name: awx
             key: token
-      subscriptionID: 
+      subscriptionID:
+      sendFinished: false
 EOF
 ) | tee /home/$shell_user/keptn/easytravel/webhook.yaml
 
-##################################
-# Set user and file permissions  #
-##################################
+###################################
+#  Set user and file permissions  #
+###################################
 
 echo "Configuring environment for user $shell_user"
 chown -R $shell_user:$shell_user /home/$shell_user/.* /home/$shell_user/*

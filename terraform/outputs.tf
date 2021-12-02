@@ -5,10 +5,10 @@ output "ssh_login" {
   }
 }
 
-output "dt_env_url" {
+output "dashboard" {
   value = {
     for index, user in var.users:
-    user.email => "Environment URL: ${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env[0].id}"
+    user.email => "http://dashboard.${google_compute_instance.acebox[index].network_interface[0].access_config[0].nat_ip}.nip.io user: admin, password: dynatrace"
   }
 }
 

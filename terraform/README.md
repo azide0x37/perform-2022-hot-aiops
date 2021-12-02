@@ -28,7 +28,7 @@ A GCP account is needed.
 
     ```hcl
     name_prefix          = "example-hot-aiops""
-    dt_cluster_url       = "https://{id}.managed-sprint.dynalabs.io" 
+    dt_cluster_url       = "https://{id}.managed-sprint.dynalabs.io"
     dt_cluster_api_token = "{your_cluser_api_token}"
     gcloud_project       = "myGCPProject" # GCP Project you want to use
     gcloud_zone          = "us-central1-a" # GCP zone name
