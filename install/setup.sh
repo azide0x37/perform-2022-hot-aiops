@@ -60,6 +60,7 @@ echo '{
 }' > /etc/docker/daemon.json
 service docker start
 usermod -a -G docker $shell_user
+wget https://github.com/mikefarah/yq/releases/download/v4.15.1/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
 
 ##############################
 #       Clone repo           #
@@ -535,9 +536,9 @@ spec:
           tasks:
             - name: "action"
             - name: "evaluation"
-              triggeredAfter: "5m"
+              triggeredAfter: "2m"
               properties:
-                timeframe: "5m"' > /home/$shell_user/keptn/easytravel/shipyard.yaml
+                timeframe: "2m"' > /home/$shell_user/keptn/easytravel/shipyard.yaml
 keptn create project easytravel --shipyard=/home/$shell_user/keptn/easytravel/shipyard.yaml --git-user=$git_user --git-token=$gitea_pat --git-remote-url=http://$gitea_domain/$git_org/easytravel.git
 
 # Create catch all service for dynatrace detected problems
@@ -563,7 +564,7 @@ keptn_notification_body=$(cat <<EOF
     "name": "Keptn Problem Notification",
     "alertingProfile": "$ALERTING_PROFILE_ID",
     "active": true,
-    "url": "http://keptn.$ingress_domain/api/v1/event",
+    "url": "$KEPTN_ENDPOINT/v1/event",
     "acceptAnyCertificate": true,
     "payload": "{\n    \"specversion\":\"1.0\",\n    \"shkeptncontext\":\"{PID}\",\n    \"type\":\"sh.keptn.events.problem\",\n    \"source\":\"dynatrace\",\n    \"id\":\"{PID}\",\n    \"time\":\"\",\n    \"contenttype\":\"application/json\",\n    \"data\": {\n        \"State\":\"{State}\",\n        \"ProblemID\":\"{ProblemID}\",\n        \"PID\":\"{PID}\",\n        \"ProblemTitle\":\"{ProblemTitle}\",\n        \"ProblemURL\":\"{ProblemURL}\",\n        \"ProblemDetails\":{ProblemDetailsJSON},\n        \"Tags\":\"{Tags}\",\n        \"ImpactedEntities\":{ImpactedEntities},\n        \"ImpactedEntity\":\"{ImpactedEntity}\",\n        \"KeptnProject\" : \"easytravel\",\n        \"KeptnService\" : \"allproblems\",\n        \"KeptnStage\" : \"production\"\n    }\n}",
     "headers": [
@@ -581,13 +582,17 @@ keptn_notification_body=$(cat <<EOF
 EOF
 )
 
-curl -k -s --location --request PUT "${DT_ENV_URL}/api/config/v1/notifications/$PROBLEM_NOTIFICATION_ID" \
-  --header "Authorization: Api-Token $DT_API_TOKEN" \
-  --header "Content-Type: application/json" \
-  --data-raw "${keptn_notification_body}"
+echo "update keptn problem notification"
+curl -k --location --request PUT "${DT_ENV_URL}/api/config/v1/notifications/$PROBLEM_NOTIFICATION_ID" --header "Authorization: Api-Token $DT_API_TOKEN" \
+  --header "Content-Type: application/json" --data-raw "${keptn_notification_body}"
 
 awx_token=$(echo -n $login_user:$login_password | base64)
 keptn create secret awx --from-literal="token=$awx_token" --scope=keptn-webhook-service
+
+curl -s -X GET "$KEPTN_ENDPOINT/configuration-service/v1/project/easytravel/resource/%252Fwebhook%252Fwebhook.yaml?disableUpstreamSync=false" \
+  -H "accept: application/json" -H "x-token: $KEPTN_API_TOKEN" | jq -r .resourceContent | base64 --decode > /home/$shell_user/keptn/easytravel/webhook.yaml
+
+subscription_id=$(cat /home/$shell_user/keptn/easytravel/webhook.yaml | yq e '.spec.webhooks[0].subscriptionID' -)
 
 (
 cat <<EOF
@@ -597,7 +602,7 @@ metadata:
   name: webhook-configuration
 spec:
   webhooks:
-    - type: sh.keptn.event.action.*
+    - type: sh.keptn.event.action.triggered
       requests:
         - "curl --header 'Authorization: Basic {{.env.secret_awx_token}}'
           --header 'Content-Type: application/json' --request POST --data
@@ -608,10 +613,33 @@ spec:
           secretRef:
             name: awx
             key: token
-      subscriptionID:
+      subscriptionID: $subscription_id
       sendFinished: false
 EOF
 ) | tee /home/$shell_user/keptn/easytravel/webhook.yaml
+
+echo '---
+spec_version: '1.0'
+indicators:
+  suspension_time: metricSelector=builtin:tech.jvm.memory.gc.suspensionTime:merge(0):avg&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)
+  garbage_collection: metricSelector=builtin:tech.jvm.memory.pool.collectionTime:merge(0):avg&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)' > /home/$shell_user/keptn/easytravel/sli.yaml
+
+echo '---
+    spec_version: '0.1.0'
+    comparison:
+      compare_with: "single_result"
+      include_result_with_score: "pass"
+      aggregate_function: avg
+    objectives:
+      - sli: suspension_time
+      - sli: garbage_collection
+    total_score:
+      pass: "90%"
+      warning: "75%"' > /home/$shell_user/keptn/easytravel/slo.yaml
+
+keptn add-resource --project=easytravel --resource=/home/$shell_user/keptn/easytravel/sli.yaml --resourceUri=dynatrace/sli.yaml
+keptn configure monitoring dynatrace --project=easytravel
+keptn add-resource --project=easytravel --stage=production --service=allproblems --resource=/home/$shell_user/keptn/easytravel/slo.yaml --resourceUri=slo.yaml
 
 ###################################
 #  Set user and file permissions  #
