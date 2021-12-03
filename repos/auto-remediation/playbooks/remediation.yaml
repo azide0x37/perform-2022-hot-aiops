@@ -36,7 +36,7 @@
       remediation_result: pass
     when: easytravelserviceresponse.state|default("") == "started"
 
-  - name: push interactive event to keptn
+  - name: push sh.keptn.event.action.finished event
     uri:
       url: "{{ keptn_url }}{{ keptn_events_api }}"
       method: POST
@@ -46,15 +46,20 @@
         Content-Type: "application/cloudevents+json"
         x-token: "{{ keptn_api_token }}"
       body:
+        specversion: '1.0'
+        source: AWX
+        type: sh.keptn.event.action.finished
+        datacontenttype: application/json
         data:
           project: "{{ keptn_project }}"
           stage: "{{ keptn_stage }}"
           service: "{{ keptn_service }}"
           status: "{{ remediation_status|default('errored') }}"
           result: "{{ remediation_result|default('fail') }}"
-        source: AWX
-        specversion: '1.0'
-        type: sh.keptn.event.mytask-interactive.finished
-        shkeptncontext: "{{ sh_keptn_context }}"
+          message: ansible remediation completed
+          action:
+            status: "{{ remediation_status|default('errored') }}"
+            result: "{{ remediation_result|default('fail') }}"
         triggeredid: "{{ event_id }}"
+        shkeptncontext: "{{ sh_keptn_context }}"
       body_format: json
