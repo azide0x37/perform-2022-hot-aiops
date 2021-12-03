@@ -518,7 +518,8 @@ helm upgrade -i ace-dashboard /tmp/dashboard-helm-chart --namespace dashboard --
 echo "Gitea - Create repo easytravel..."
 curl -s -k -d '{"name":"easytravel", "private":false, "auto-init":true}' -H "Content-Type: application/json" -X POST "http://$gitea_domain/api/v1/org/$git_org/repos?access_token=$gitea_pat"
 
-# Configure easytravel project
+echo "Configure easytravel project..."
+
 echo 'apiVersion: "spec.keptn.sh/0.2.2"
 kind: "Shipyard"
 metadata:
@@ -544,11 +545,33 @@ keptn create project easytravel --shipyard=/home/$shell_user/keptn/easytravel/sh
 # Create catch all service for dynatrace detected problems
 keptn create service allproblems --project=easytravel
 
-# Update keptn problem notification
+echo "configure sli/slo for easytravel project"
+echo '---
+spec_version: '1.0'
+indicators:
+  suspension_time: metricSelector=builtin:tech.jvm.memory.gc.suspensionTime:merge("dt.entity.process_group_instance"):avg&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)
+  garbage_collection: metricSelector=builtin:tech.jvm.memory.pool.collectionTime:merge("dt.entity.process_group_instance"):avg&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)' > /home/$shell_user/keptn/easytravel/sli.yaml
+
+echo '---
+    spec_version: '0.1.0'
+    comparison:
+      compare_with: "single_result"
+      include_result_with_score: "pass"
+      aggregate_function: avg
+    objectives:
+      - sli: suspension_time
+      - sli: garbage_collection
+    total_score:
+      pass: "90%"
+      warning: "75%"' > /home/$shell_user/keptn/easytravel/slo.yaml
+
+keptn add-resource --project=easytravel --resource=/home/$shell_user/keptn/easytravel/sli.yaml --resourceUri=dynatrace/sli.yaml
+keptn configure monitoring dynatrace --project=easytravel
+keptn add-resource --project=easytravel --stage=production --service=allproblems --resource=/home/$shell_user/keptn/easytravel/slo.yaml --resourceUri=slo.yaml
+
+echo "Update keptn problem notification to forward problems to easytravel project"
 #DT_API_TOKEN=$(kubectl get secret dynatrace -n keptn -ojsonpath='{.data.DT_API_TOKEN}' | base64 --decode)
 #DT_ENV_URL=$(kubectl get secret dynatrace -n keptn -ojsonpath='{.data.DT_TENANT}' | base64 --decode)
-
-# Update keptn problem notification to forward problems to easytravel project
 
 PROBLEM_NOTIFICATION_ID=$(curl -k -s --location --request GET "${DT_ENV_URL}/api/config/v1/notifications" \
   --header "Authorization: Api-Token $DT_API_TOKEN" \
@@ -582,18 +605,13 @@ keptn_notification_body=$(cat <<EOF
 EOF
 )
 
-echo "update keptn problem notification"
 curl -k --location --request PUT "${DT_ENV_URL}/api/config/v1/notifications/$PROBLEM_NOTIFICATION_ID" --header "Authorization: Api-Token $DT_API_TOKEN" \
   --header "Content-Type: application/json" --data-raw "${keptn_notification_body}"
 
 awx_token=$(echo -n $login_user:$login_password | base64)
 keptn create secret awx --from-literal="token=$awx_token" --scope=keptn-webhook-service
 
-curl -s -X GET "$KEPTN_ENDPOINT/configuration-service/v1/project/easytravel/resource/%252Fwebhook%252Fwebhook.yaml?disableUpstreamSync=false" \
-  -H "accept: application/json" -H "x-token: $KEPTN_API_TOKEN" | jq -r .resourceContent | base64 --decode > /home/$shell_user/keptn/easytravel/webhook.yaml
-
-subscription_id=$(cat /home/$shell_user/keptn/easytravel/webhook.yaml | yq e '.spec.webhooks[0].subscriptionID' -)
-
+echo "generate webhook file for awx (needs to be manually created on keptn bridge and updated"
 (
 cat <<EOF
 apiVersion: webhookconfig.keptn.sh/v1alpha1
@@ -613,33 +631,10 @@ spec:
           secretRef:
             name: awx
             key: token
-      subscriptionID: $subscription_id
+      subscriptionID: # subscription id from existing webhook
       sendFinished: false
 EOF
 ) | tee /home/$shell_user/keptn/easytravel/webhook.yaml
-
-echo '---
-spec_version: '1.0'
-indicators:
-  suspension_time: metricSelector=builtin:tech.jvm.memory.gc.suspensionTime:merge(0):avg&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)
-  garbage_collection: metricSelector=builtin:tech.jvm.memory.pool.collectionTime:merge(0):avg&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)' > /home/$shell_user/keptn/easytravel/sli.yaml
-
-echo '---
-    spec_version: '0.1.0'
-    comparison:
-      compare_with: "single_result"
-      include_result_with_score: "pass"
-      aggregate_function: avg
-    objectives:
-      - sli: suspension_time
-      - sli: garbage_collection
-    total_score:
-      pass: "90%"
-      warning: "75%"' > /home/$shell_user/keptn/easytravel/slo.yaml
-
-keptn add-resource --project=easytravel --resource=/home/$shell_user/keptn/easytravel/sli.yaml --resourceUri=dynatrace/sli.yaml
-keptn configure monitoring dynatrace --project=easytravel
-keptn add-resource --project=easytravel --stage=production --service=allproblems --resource=/home/$shell_user/keptn/easytravel/slo.yaml --resourceUri=slo.yaml
 
 ###################################
 #  Set user and file permissions  #
