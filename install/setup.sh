@@ -24,7 +24,7 @@ git_user="dynatrace"
 git_password="dynatrace"
 git_email="ace@ace.ace"
 shell_user=${shell_user:="dtu_training"}
-shell_password=${shell_password:="dynatrace"}
+shell_password=${shell_password:="@perform2022"}
 
 ################################
 #      HELPER FUNCTIONS        #
@@ -549,8 +549,8 @@ echo "configure sli/slo for easytravel project"
 echo '---
 spec_version: '1.0'
 indicators:
-  suspension_time: metricSelector=builtin:tech.jvm.memory.gc.suspensionTime:merge("dt.entity.process_group_instance"):avg&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)
-  garbage_collection: metricSelector=builtin:tech.jvm.memory.pool.collectionTime:merge("dt.entity.process_group_instance"):avg&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)' > /home/$shell_user/keptn/easytravel/sli.yaml
+  suspension_time: metricSelector=builtin:tech.jvm.memory.gc.suspensionTime:merge("dt.entity.process_group_instance"):max&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)
+  garbage_collection: metricSelector=builtin:tech.jvm.memory.pool.collectionTime:merge("dt.entity.process_group_instance"):max&entitySelector=entityName("com.dynatrace.easytravel.business.backend.jar"),type(PROCESS_GROUP_INSTANCE)' > /home/$shell_user/keptn/easytravel/sli.yaml
 
 echo '---
     spec_version: '0.1.0'
