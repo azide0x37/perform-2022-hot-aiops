@@ -12,7 +12,7 @@ variable "gcloud_cred_file" {
 
 variable "name_prefix" {
   description = "Prefix to distinguish the instance"
-  default = "ace-box-cloud"
+  default = "remediation1"
 }
 
 variable "acebox_size" {
@@ -45,31 +45,14 @@ variable "disk_size" {
   default     = "60"
 }
 
-variable "environment_state" {
-  description = "State of Dynatrace environment"
-  default = "ENABLED"
+variable "dt_tenant" {
+  description = "Dynatrace tenant in format of https://[environment-guid].live.dynatrace.com OR https://[managed-domain]/e/[environment-guid]"
 }
 
-variable "dt_cluster_url" {
-  description = "Dynatrace cluster URL"
+variable "dt_api_token" {
+  description = "Dynatrace API token in format of 'dt0c01. ...'"
 }
 
-variable "dt_cluster_api_token" {
-  description = "Dynatrace cluster API token"
-}
-
-variable "users" {
-  description = "Map of lab participants"
-  type = map(object({
-    email = string
-    firstName = string
-    lastName = string
-  }))
-  default = {
-    0 = {
-      email = "john.smith@example.com"
-      firstName = "John-remediate"
-      lastName = "Smith"
-    },
-  }
+variable "dt_paas_token" {
+  description = "Dynatrace PaaS token in format of 'dt0c01. ...'"
 }
