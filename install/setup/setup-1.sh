@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-
+echo "input variables"
+echo $DT_ENV_URL
 #########################################
 #  VARIABLES                            #
 #########################################
@@ -23,8 +24,6 @@ git_repo="auto-remediation"
 git_user="dynatrace"
 git_password="dynatrace"
 git_email="ace@ace.ace"
-shell_user=${shell_user:="dtu_training"}
-shell_password=${shell_password:="@perform2022"}
 
 ################################
 #      HELPER FUNCTIONS        #
@@ -37,14 +36,6 @@ wait-for-url() {
     do echo "Waiting for ${0}" && sleep 5;\
     done' ${1}
 }
-#########################################
-# PRE SETUP                              #
-#########################################
-"sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y",
-"sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config",
-"sudo service ssh restart",
-"sudo usermod -aG sudo ${ACEBOX_USER}",
-"echo '${ACEBOX_USER}:${ACEBOX_PASSWORD}' | sudo chpasswd"
 
 ##########################################
 #  INSTALL REQUIRED PACKAGES             #
@@ -69,60 +60,6 @@ echo '{
 service docker start
 usermod -a -G docker $shell_user
 wget https://github.com/mikefarah/yq/releases/download/v4.15.1/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
-
-##############################
-#       Clone repo           #
-##############################
-#mkdir -p /tmp/$clone_folder
-#git clone "$source_repo" /tmp/$clone_folder
-#cp -R /tmp/$clone_folder/install/* /tmp/
-#cp -R /tmp/$clone_folder/repos/auto-remediation/ /home/$shell_user
-
-#################################
-# Create Dynatrace Tokens       #
-#################################
-
-DT_CREATE_ENV_TOKENS=${DT_CREATE_ENV_TOKENS:="false"}
-echo "Create Dynatrace Tokens? : $DT_CREATE_ENV_TOKENS"
-
-if [ "$DT_CREATE_ENV_TOKENS" != "false" ]; then
-    printf "Creating PAAS Token for Dynatrace Environment ${DT_ENV_URL}\n\n"
-
-    paas_token_body='{
-                        "scopes": [
-                            "InstallerDownload"
-                        ],
-                        "name": "hot-aiops-paas"
-                    }'
-
-    DT_PAAS_TOKEN_RESPONSE=$(curl -k -s --location --request POST "${DT_ENV_URL}/api/v2/apiTokens" \
-    --header "Authorization: Api-Token $DT_CLUSTER_TOKEN" \
-    --header "Content-Type: application/json" \
-    --data-raw "${paas_token_body}")
-    DT_PAAS_TOKEN=$(echo $DT_PAAS_TOKEN_RESPONSE | jq -r '.token' )
-
-    printf "Creating API Token for Dynatrace Environment ${DT_ENV_URL}\n\n"
-
-    api_token_body='{
-                    "scopes": [
-                        "DataExport", "PluginUpload", "DcrumIntegration", "AdvancedSyntheticIntegration", "ExternalSyntheticIntegration", 
-                        "LogExport", "ReadConfig", "WriteConfig", "DTAQLAccess", "UserSessionAnonymization", "DataPrivacy", "CaptureRequestData", 
-                        "Davis", "DssFileManagement", "RumJavaScriptTagManagement", "TenantTokenManagement", "ActiveGateCertManagement", "RestRequestForwarding", 
-                        "ReadSyntheticData", "DataImport", "auditLogs.read", "metrics.read", "metrics.write", "entities.read", "entities.write", "problems.read", 
-                        "problems.write", "networkZones.read", "networkZones.write", "activeGates.read", "activeGates.write", "credentialVault.read", "credentialVault.write", 
-                        "extensions.read", "extensions.write", "extensionConfigurations.read", "extensionConfigurations.write", "extensionEnvironment.read", "extensionEnvironment.write", 
-                        "metrics.ingest", "securityProblems.read", "securityProblems.write", "syntheticLocations.read", "syntheticLocations.write", "settings.read", "settings.write", 
-                        "tenantTokenRotation.write", "slo.read", "slo.write", "releases.read", "apiTokens.read", "apiTokens.write", "logs.read", "logs.ingest"
-                    ],
-                    "name": "hot-aiops-api-token"
-                    }'
-
-    DT_API_TOKEN_RESPONSE=$(curl -k -s --location --request POST "${DT_ENV_URL}/api/v2/apiTokens" \
-    --header "Authorization: Api-Token $DT_CLUSTER_TOKEN" \
-    --header "Content-Type: application/json" \
-    --data-raw "${api_token_body}")
-    DT_API_TOKEN=$(echo $DT_API_TOKEN_RESPONSE | jq -r '.token' )
-fi
 
 ##############################
 # Retrieve Hostname and IP   #

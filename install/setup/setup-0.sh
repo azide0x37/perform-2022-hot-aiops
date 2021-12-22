@@ -5,3 +5,4 @@ echo $DT_PAAS_TOKEN
 echo $shell_user
 echo $shell_password
 
+./setup-1.sh
