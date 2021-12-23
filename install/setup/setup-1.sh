@@ -170,7 +170,6 @@ server {
     listen 80;
     listen [::]:80;
     server_name vscode.*;
-
     location / {
       proxy_pass http://localhost:8080/;
       proxy_set_header Host $host;
