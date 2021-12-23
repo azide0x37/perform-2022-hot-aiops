@@ -120,3 +120,4 @@ sh /tmp/oneagent.sh --set-app-log-content-access=true --set-system-logs-access-e
 #       INSTALL VSCODE         #
 ################################
 curl -fsSL https://code-server.dev/install.sh | sh
+sudo systemctl enable --now code-server@$USER
