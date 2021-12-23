@@ -121,3 +121,142 @@ sh /tmp/oneagent.sh --set-app-log-content-access=true --set-system-logs-access-e
 ################################
 curl -fsSL https://code-server.dev/install.sh | sh
 sudo systemctl enable --now code-server@$USER
+
+##############################
+#   Install ingress-nginx    #
+##############################
+
+echo "Installing ingress-nginx"
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace --wait --version 3.30.0 \
+  --set=controller.service.type=$nginx_ingress_service_type --set=controller.service.nodePorts.http=32080 --set=controller.service.nodePorts.https=32443
+
+
+##########################################
+#      INSTALL NGINX REVERSE PROXY       #
+##########################################
+
+echo "Installing nginx reverse proxy"
+mkdir -p /home/$shell_user/nginx/
+echo 'upstream keptn {
+    server   172.17.0.1:32080;
+}
+
+upstream awx {
+    server   172.17.0.1:32080;
+}
+
+upstream gitea {
+    server   172.17.0.1:32080;
+}
+
+upstream dashboard {
+    server   172.17.0.1:32080;
+}
+
+upstream angular {
+    server   172.17.0.1:9080;
+}
+
+upstream classic {
+    server   172.17.0.1:8079;
+}
+
+upstream rest {
+    server   172.17.0.1:8091;
+}
+server {
+    listen 80;
+    listen [::]:80;
+    server_name vscode.*;
+
+    location / {
+      proxy_pass http://localhost:8080/;
+      proxy_set_header Host $host;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection upgrade;
+      proxy_set_header Accept-Encoding gzip;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name keptn.*;
+    location / {
+      proxy_pass  http://keptn/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name awx.*;
+    location / {
+      proxy_pass  http://awx/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name gitea.*;
+    location / {
+      proxy_pass  http://gitea/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name dashboard.*;
+    location / {
+      proxy_pass  http://dashboard/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name	angular.*;
+    
+    location / {
+      proxy_pass	http://angular/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name classic.*;
+    location / {
+      proxy_pass	http://classic/;
+      proxy_pass_request_headers  on;
+      proxy_set_header   Host $host;
+    }
+}
+
+server {
+  listen 80;
+  listen [::]:80;
+  server_name rest.*;
+  location / {
+    proxy_pass	http://rest/;
+    proxy_pass_request_headers  on;
+    proxy_set_header   Host $host;
+  }
+}' > /home/$shell_user/nginx/aiops-proxy.conf
+
+# start reverse proxy container
+docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --name reverseproxy nginx:1.18
