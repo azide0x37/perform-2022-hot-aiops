@@ -112,21 +112,22 @@ helm repo add gitea-charts https://dl.gitea.io/charts/
 ################################
 #       INSTALL ONEAGENT       #
 ################################
-echo "Installing OneAgent"
+echo "INSTALLING ONE AGENT"
 wget -nv -O /tmp/oneagent.sh "$DT_ENV_URL/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=$DT_PAAS_TOKEN&arch=x86&flavor=default"
 sh /tmp/oneagent.sh --set-app-log-content-access=true --set-system-logs-access-enabled=true --set-infra-only=false --set-host-group=easytravel-remediation
 
 ################################
 #       INSTALL VSCODE         #
 ################################
-curl -fsSL https://code-server.dev/install.sh | sh
+echo "INSTALLING VSCODE"
+curl -fsSL https://code-server.dev/install.sh --http1.1 | sh
 sudo systemctl enable --now code-server@$USER
 
 ##############################
 #   Install ingress-nginx    #
 ##############################
 
-echo "Installing ingress-nginx"
+echo "INSTALLING INGRESS"
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace --wait --version 3.30.0 \
@@ -137,35 +138,9 @@ helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create
 #      INSTALL NGINX REVERSE PROXY       #
 ##########################################
 
-echo "Installing nginx reverse proxy"
+echo "INSTALLING NGINX REVERSE PROXY"
 mkdir -p /home/$shell_user/nginx/
-echo 'upstream keptn {
-    server   172.17.0.1:32080;
-}
-
-upstream awx {
-    server   172.17.0.1:32080;
-}
-
-upstream gitea {
-    server   172.17.0.1:32080;
-}
-
-upstream dashboard {
-    server   172.17.0.1:32080;
-}
-
-upstream angular {
-    server   172.17.0.1:9080;
-}
-
-upstream classic {
-    server   172.17.0.1:8079;
-}
-
-upstream rest {
-    server   172.17.0.1:8091;
-}
+echo '
 server {
     listen 80;
     listen [::]:80;
@@ -176,84 +151,7 @@ server {
       proxy_set_header Accept-Encoding gzip;
     }
 }
-
-server {
-    listen 80;
-    listen [::]:80;
-    server_name keptn.*;
-    location / {
-      proxy_pass  http://keptn/;
-      proxy_pass_request_headers  on;
-      proxy_set_header   Host $host;
-    }
-}
-
-server {
-    listen 80;
-    listen [::]:80;
-    server_name awx.*;
-    location / {
-      proxy_pass  http://awx/;
-      proxy_pass_request_headers  on;
-      proxy_set_header   Host $host;
-    }
-}
-
-server {
-    listen 80;
-    listen [::]:80;
-    server_name gitea.*;
-    location / {
-      proxy_pass  http://gitea/;
-      proxy_pass_request_headers  on;
-      proxy_set_header   Host $host;
-    }
-}
-
-server {
-    listen 80;
-    listen [::]:80;
-    server_name dashboard.*;
-    location / {
-      proxy_pass  http://dashboard/;
-      proxy_pass_request_headers  on;
-      proxy_set_header   Host $host;
-    }
-}
-
-server {
-    listen 80;
-    listen [::]:80;
-    server_name	angular.*;
-    
-    location / {
-      proxy_pass	http://angular/;
-      proxy_pass_request_headers  on;
-      proxy_set_header   Host $host;
-    }
-}
-
-server {
-    listen 80;
-    listen [::]:80;
-    server_name classic.*;
-    location / {
-      proxy_pass	http://classic/;
-      proxy_pass_request_headers  on;
-      proxy_set_header   Host $host;
-    }
-}
-
-server {
-  listen 80;
-  listen [::]:80;
-  server_name rest.*;
-  location / {
-    proxy_pass	http://rest/;
-    proxy_pass_request_headers  on;
-    proxy_set_header   Host $host;
-  }
-}' > /home/$shell_user/nginx/aiops-proxy.conf
+' > /home/$shell_user/nginx/aiops-proxy.conf
 
 # start reverse proxy container
 docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --name reverseproxy nginx:1.18
