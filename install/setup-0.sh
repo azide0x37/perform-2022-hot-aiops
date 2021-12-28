@@ -5,4 +5,5 @@ echo $DT_PAAS_TOKEN
 echo $shell_user
 echo $shell_password
 
+cp -R ./repos /home/$USER/
 ./install/setup-1.sh
