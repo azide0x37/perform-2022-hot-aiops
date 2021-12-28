@@ -6,4 +6,4 @@ echo $shell_user
 echo $shell_password
 
 cp -R ./repos /home/$USER/
-./install/setup-1.sh
+#./install/setup-1.sh
