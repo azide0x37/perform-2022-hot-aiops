@@ -14,8 +14,9 @@ using the console or a ssh client log into your VM. (Check the provided credenti
 - K3s as our kubernetes cluster
 - Dynatrace one agent 
 - Keptn CLI and control plane on the kubernetes cluster
-- Ingress Nginx to route the traffic
-- Ingress Reverse proxy
-- Configure Keptn - creates ingress,
+- Ingress Nginx to route the traffic in the kubernetes cluster
+- Ingress Reverse proxy to router part of the traffic to the outside service and part to upstream kubernetes
+- Configure Keptn -
+
 
 
