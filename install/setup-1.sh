@@ -36,6 +36,10 @@ wait-for-url() {
     do echo "Waiting for ${0}" && sleep 5;\
     done' ${1}
 }
+##########################################
+#            COPY FOLDER                 #
+##########################################
+cp -R /home/$USER/perform-2022-hot-aiops/repos /home/$USER/
 
 ##########################################
 #  INSTALL REQUIRED PACKAGES             #
