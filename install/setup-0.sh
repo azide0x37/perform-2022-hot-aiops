@@ -5,4 +5,4 @@ echo $DT_PAAS_TOKEN
 echo $shell_user
 echo $shell_password
 
-./install/setup-1.sh
+./perform-2022-hot-aiops/install/setup-1.sh

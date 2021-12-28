@@ -16,7 +16,9 @@ using the console or a ssh client log into your VM. (Check the provided credenti
 - Keptn CLI and control plane on the kubernetes cluster
 - Ingress Nginx to route the traffic in the kubernetes cluster
 - Ingress Reverse proxy to router part of the traffic to the outside service and part to upstream kubernetes
-- Configure Keptn -
+- Configure Keptn - Install dynatrace-service for QG check, configures ingress and sets Dynatrace project
+- Install gitea as our local git repo and adds the local code 
+
 
 
 
