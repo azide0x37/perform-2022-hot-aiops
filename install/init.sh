@@ -3,7 +3,7 @@ echo "getting vm ready"
 # PRE SETUP                              #
 #########################################
 
-sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 # sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
 sudo service ssh restart
 # sudo usermod -aG sudo $shell_user
