@@ -343,6 +343,7 @@ echo "Gitea - Git config..."
 git config --global user.email $git_email && git config --global user.name $git_user && git config --global http.sslverify false
 
 echo "Gitea - Adding resources to repo $git_org/$git_repo"
+cd ~
 cd /home/$shell_user/perform-2022-hot-aiops
 git init
 git remote add origin http://$git_user:$gitea_pat@$gitea_domain/$git_org/$git_repo.git
@@ -351,3 +352,5 @@ git commit -m "first commit"
 git push -u origin master
 git checkout .
 git pull
+
+./setup-2.sh
