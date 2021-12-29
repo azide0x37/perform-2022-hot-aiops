@@ -19,8 +19,11 @@ using the console or a ssh client log into your VM. (Check the provided credenti
 - Configure Keptn - Install dynatrace-service for QG check, configures ingress and sets Dynatrace project
 - Install gitea as our local git repo and adds the local code
 - Install and configure ansible AWX
-- Install easytravel 
-- 
+- Install easytravel Angular version
+- Auto remediation lab setup
+  - Create an easytravel repo in gitea
+  - Configure an easytravel project in keptn
+  - Configure sli/slo for easytravel project for remediation validation
 
 
 

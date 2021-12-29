@@ -45,10 +45,12 @@ cp -R /home/$USER/perform-2022-hot-aiops/repos /home/$USER/
 ##########################################
 #  INSTALL REQUIRED PACKAGES             #
 ##########################################
+echo "installing JQ"
+sudo apt-get install jq
 
 echo "Installing packages"
-apt-get --qq update -y 
-apt-get --qq install -y git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
+apt-get update -y 
+apt-get install -y git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
  libatk1.0-0 libc6:amd64 libcairo2 libcups2 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 libxss1 xdg-utils \
  libminizip-dev libgbm-dev libflac8 apache2-utils
 add-apt-repository --yes --update ppa:ansible/ansible
