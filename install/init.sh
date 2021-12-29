@@ -8,7 +8,8 @@ sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -
 sudo service ssh restart
 sudo usermod -aG sudo $shell_user
 # echo $shell_user:$shell_password | sudo chpasswd
-sudo apt install git -y
+sudo apt-get install -y liberror-perl -q
+sudo apt install git -y -q
 echo "Cloning repo"
 
 git clone -q https://github.com/dynatrace-ace/perform-2022-hot-aiops.git
