@@ -46,7 +46,7 @@ cp -R /home/$USER/perform-2022-hot-aiops/repos /home/$USER/
 #  INSTALL REQUIRED PACKAGES             #
 ##########################################
 echo "installing JQ"
-sudo apt-get install jq
+sudo apt-get install jq -y
 
 echo "Installing packages"
 apt-get update -y 
