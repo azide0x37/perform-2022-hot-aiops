@@ -255,7 +255,7 @@ server {
 }' > /home/$shell_user/nginx/aiops-proxy.conf
 
 # start reverse proxy container
-docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --restart --name reverseproxy nginx:1.18
+docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --restart always --name reverseproxy nginx:1.18
 
 ###############################
 #      CONFIGURE KEPTN        #
@@ -411,7 +411,7 @@ ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_d
 
 cd /tmp/
 wget -nv -O dynatrace-easytravel-linux-x86_64.jar http://dexya6d9gs5s.cloudfront.net/latest/dynatrace-easytravel-linux-x86_64.jar
-java -jar dynatrace-easytravel-linux-x86_64.jar -y
+java -jar -q dynatrace-easytravel-linux-x86_64.jar -y
 rm dynatrace-easytravel-linux-x86_64.jar
 chmod 755 -R easytravel-2.0.0-x64
 chown $shell_user:$shell_user -R easytravel-2.0.0-x64
