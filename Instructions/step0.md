@@ -1,4 +1,4 @@
-# Setup the environment
+# Review the environment configuration
 
 We will install/configure the require application into our demo environment to simulate a production application running.
 

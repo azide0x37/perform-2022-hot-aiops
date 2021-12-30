@@ -255,7 +255,7 @@ server {
 }' > /home/$shell_user/nginx/aiops-proxy.conf
 
 # start reverse proxy container
-docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --name reverseproxy nginx:1.18
+docker run -p 80:80 -v /home/$shell_user/nginx:/etc/nginx/conf.d/:ro -d --restart --name reverseproxy nginx:1.18
 
 ###############################
 #      CONFIGURE KEPTN        #
@@ -445,7 +445,7 @@ echo '  [Unit]
   Requires=network-online.target
   After=network-online.target
   [Service]
-  Restart=on-failure
+  Restart=always
   ExecStart=/tmp/easytravel-2.0.0-x64/runEasyTravelNoGUI.sh
   ExecReload=/bin/kill -HUP $MAINPID
   [Install]
