@@ -9,6 +9,8 @@ ref: https://keptn.sh/docs/0.11.x/integrations/webhooks/
 In this exercise you will configure a remediation workflow using Keptn webhooks and Ansible AWX
 
 ### 1. Configure the weekhook Integration
+1. Check that the EasyTravel service is running under the dashboard > Deployment preview (![webhook](./deploy-easytravel.png)
+
 1. Using ssh get into the folder `/home/ace/keptn/easytravel` and view the contents of th webhook.yaml file 
 ```(bash)
 cd /home/ace/keptn/easytravel
@@ -35,15 +37,14 @@ spec:
       requests:
         - "curl --header 'Authorization: Basic {{.env.secret_awx_token}}'
           --header 'Content-Type: application/json' --request POST --data
-          '{\"extra_vars\":{\"event_id\":\"{{.id}}\",\"type\":\"{{.type}}\",\"sh_keptn_context\":\"{{.shkeptncontext}}\",\"dt_pid\":\"{{.data.problem.PID}}\",\"keptn_project\":\"{{.data.project}}\",\"keptn_service\":\"{{.data.service}}\",\"keptn_stage\":\"{{.data.stage}}\"}}'
-          http://awx.35.230.171.52.nip.io/api/v2/job_templates/9/launch/"
+          '{\"extra_vars\":{\"event_id\":\"{{.id}}\",\"type\":\"{{.type}}\",\"sh_keptn_context\":\"{{.shkeptncontext}}\",\"dt_pid\":\"{{.data.problem.PID}}\",\"keptn_project\":\"{{.data.project}}\",\"keptn_service\":\"{{.data.service}}\",\"keptn_stage\":\"{{.data.stage}}\"}}' http://awx.xx.xx.xx.xx.nip.io/api/v2/job_templates/9/launch/"
       envFrom:
         - name: secret_awx_token
           secretRef:
             name: awx
             key: token
-      subscriptionID: # subscription id from existing webhook
-      sendFinished: false      
+      subscriptionID: xxxxxxx-xxxxx-xxxxxxx-xxxxxx
+      sendFinished: false  
 ```
 
 
