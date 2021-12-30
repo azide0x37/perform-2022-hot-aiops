@@ -23,7 +23,7 @@ cd /home/ace/keptn/easytravel
 7. Get into Gitea (you can use the dashboard and find the link to gitea) and navigate into the repo `http://gitea.xx.xx.xx.nip.io/perform/easytravel`
 8. This repo contains all the configuration files added to the keptn project. We will modify the file located in 
 `webhook/webhook.yaml` using the gitea online interface.
-8. Replace the contents carefully by only modifying the curl command to match the one below.
+8. Replace the contents carefully by only modifying the curl command to match the one below. (Fix the data part of the webhook curl command)
 ```(yaml)
 apiVersion: webhookconfig.keptn.sh/v1alpha1
 kind: WebhookConfig
