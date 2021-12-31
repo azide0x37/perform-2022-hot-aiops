@@ -5,6 +5,6 @@ This will use the EasyTravel API to trigger a memory leak that will be detected 
 ### 3. Remediation process
 Dynatrace will detect a high memory consumption from the easytravel application.
 [memory-exhausted](./dyna-memory.png)
-Dynatrace will send a problem notification to Keptn. 
+Dynatrace will send a problem notification to Keptn. (can take a few mins to trigger)
 Keptn will check for that service the remediation file that was specified.
 

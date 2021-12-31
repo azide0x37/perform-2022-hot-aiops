@@ -401,6 +401,7 @@ EOF
 sleep 10
 kubectl -n $AWX_NAMESPACE rollout status deployment/awx-aiops
 echo "creating user for ansible"
+sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
 ansibleuser="ansiblesa"
 sudo useradd $ansibleuser
 sudo usermod -aG sudo $ansibleuser
