@@ -400,18 +400,19 @@ spec:
 EOF
 sleep 10
 kubectl -n $AWX_NAMESPACE rollout status deployment/awx-aiops
-echo "creating user for ansible"
-sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-ansibleuser="ansiblesa"
-sudo useradd $ansibleuser
-sudo usermod -aG sudo $ansibleuser
-randompass=$(date +%s | sha256sum | base64 | head -c 32)
-echo $randompass
-echo $ansibleuser:$randompass| sudo chpasswd
-sudo service ssh restart
+# echo "CREATING USER FOR ANSIBLE"
+# sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+# ansibleuser="ansiblesa"
+# sudo useradd -m $ansibleuser
+# sudo usermod -aG sudo $ansibleuser
+# randompass=$(date +%s | sha256sum | base64 | head -c 32)
+# echo $randompass
+# echo $ansibleuser:$randompass| sudo chpasswd
+# sudo service ssh restart
+# su $ansibleuser
 echo "Running playbook to configure AWX"
 ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_domain ingress_domain=$ingress_domain awx_admin_username=$login_user dt_environment_url=$DT_ENV_URL \
-  dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http shell_user=$ansibleuser shell_password=$randompass keptn_api_token=$KEPTN_API_TOKEN"
+  dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http shell_user=$shell_user shell_password=$shell_password keptn_api_token=$KEPTN_API_TOKEN"
 
 ##################################
 #      Install easyTravel        #

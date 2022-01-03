@@ -4,7 +4,7 @@ echo "getting vm ready"
 #########################################
 deb http://ftp.ca.debian.org/debian/ jessie main contrib
 sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-# sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
 sudo service ssh restart
 apt-get update -y 
 apt-get install -y -q git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
@@ -12,7 +12,7 @@ apt-get install -y -q git vim jq build-essential software-properties-common defa
  libminizip-dev libgbm-dev libflac8 apache2-utils
 
 sudo usermod -aG sudo $shell_user
-# echo $shell_user:$shell_password | sudo chpasswd
+echo $shell_user:$shell_password | sudo chpasswd
 apt-get dist-upgrade
 apt-get -f install
 sudo apt install git -y -q
