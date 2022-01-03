@@ -5,7 +5,7 @@ echo $DT_ENV_URL
 #  VARIABLES                            #
 #########################################
 echo "Starting installation"
-keptn_version=0.11.2
+keptn_version=0.11.4
 domain="nip.io"
 source_repo="https://github.com/dynatrace-ace/perform-2022-hot-aiops.git"
 clone_folder=perform-2022-hot-aiops
