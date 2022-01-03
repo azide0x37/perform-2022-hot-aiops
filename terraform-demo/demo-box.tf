@@ -61,7 +61,15 @@ resource "google_compute_instance" "acebox" {
     user        = var.acebox_user
     private_key = tls_private_key.acebox_key.private_key_pem
   }
-
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y",
+      "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config",
+      "sudo service ssh restart",
+      "sudo usermod -aG sudo ${var.acebox_user}",
+      "echo '${var.acebox_user}:${var.acebox_password}' | sudo chpasswd"
+    ]
+  }
   provisioner "file" {
     source      = "${path.module}/../install/"
     destination = "/tmp/"
@@ -70,7 +78,7 @@ resource "google_compute_instance" "acebox" {
   provisioner "remote-exec" {
     inline = [
         "sudo chmod +x /tmp/init.sh",
-        "sudo DT_ENV_URL=${var.dt_tenant} DT_API_TOKEN=${var.dt_api_token} DT_PAAS_TOKEN=${var.dt_paas_token} shell_user=${var.acebox_user} shell_password=${var.acebox_password} /tmp/init.sh"
+        "sudo DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env.id} DT_API_TOKEN=${dynatrace_environment.vhot_env.api_token} DT_PAAS_TOKEN=${dynatrace_environment.vhot_env.api_token} shell_user=${var.acebox_user} shell_password=${var.acebox_password} /tmp/init.sh"
       ]
   }
 }

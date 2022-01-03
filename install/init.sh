@@ -2,10 +2,7 @@ echo "getting vm ready"
 #########################################
 # PRE SETUP                              #
 #########################################
-deb http://ftp.ca.debian.org/debian/ jessie main contrib
-sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-sudo service ssh restart
+
 apt-get update -y 
 apt-get install -y -q git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
  libatk1.0-0 libc6:amd64 libcairo2 libcups2 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 libxss1 xdg-utils \
