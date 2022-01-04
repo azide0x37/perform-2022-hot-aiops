@@ -44,3 +44,28 @@ variable "disk_size" {
   description = "Size of disk that will be available to ace-box instance"
   default     = "60"
 }
+variable "environment_state" {
+  description = "State of Dynatrace environment"
+  default = "ENABLED"
+}
+variable "dt_cluster_url" {
+  description = "Dynatrace cluster URL"
+}
+
+variable "dt_cluster_api_token" {
+  description = "Dynatrace cluster API token"
+}
+
+variable "user" {
+  description = "Map of lab participants"
+  type = object({
+    email = string
+    firstName = string
+    lastName = string
+  })
+  default = {
+      email = "diego.test@dynatrace.com"
+      firstName = "Diego-remediate"
+      lastName = "Smith"
+  }
+}

@@ -3,8 +3,6 @@ resource "dynatrace_environment" "vhot_env" {
   state = var.environment_state
 }
 resource "dynatrace_cluster_user_group" "vhot_groups" {
-
-
 	name = "ext-group-${var.name_prefix}-${random_id.uuid.hex}"
 	access_rights = jsonencode(
 		{
@@ -43,7 +41,6 @@ resource "dynatrace_cluster_user_group" "vhot_groups" {
 }
 
 resource "dynatrace_cluster_user" "vhot_users" {
-  for_each = var.user
 
 	user_id = var.user["email"]
 	email = var.user["email"]
