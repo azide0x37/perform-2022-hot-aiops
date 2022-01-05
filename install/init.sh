@@ -8,9 +8,9 @@ apt-get install -y -q git vim jq build-essential software-properties-common defa
  libatk1.0-0 libc6:amd64 libcairo2 libcups2 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 libxss1 xdg-utils \
  libminizip-dev libgbm-dev libflac8 apache2-utils
 
-apt-get dist-upgrade -y -q
-apt-get -f install
-sudo apt install git -y -q
+apt-get --qq dist-upgrade -y 
+apt-get -q -f install
+sudo apt --qq install git -y
 echo "CLONING REPO"
 git clone -q https://github.com/dynatrace-ace/perform-2022-hot-aiops.git
 sudo chmod +x -R ./perform-2022-hot-aiops/install

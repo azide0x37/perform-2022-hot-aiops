@@ -63,7 +63,7 @@ resource "google_compute_instance" "acebox" {
   }
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y",
+      "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get --qq upgrade -y",
       "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config",
       "sudo service ssh restart",
       "sudo usermod -aG sudo ${var.acebox_user}",
