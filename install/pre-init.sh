@@ -1,7 +1,12 @@
+
+echo "UPDATING REPO"
+apt-get update -y 
+apt-get install -y -q git vim jq
+
 #################################
 # Create Dynatrace Tokens       #
 #################################
-
+DT_CREATE_ENV_TOKENS=true
 DT_CREATE_ENV_TOKENS=${DT_CREATE_ENV_TOKENS:="false"}
 echo "Create Dynatrace Tokens? : $DT_CREATE_ENV_TOKENS"
 
@@ -43,6 +48,9 @@ if [ "$DT_CREATE_ENV_TOKENS" != "false" ]; then
     --data-raw "${api_token_body}")
     DT_API_TOKEN=$(echo $DT_API_TOKEN_RESPONSE | jq -r '.token' )
 fi
+echo $DT_CLUSTER_TOKEN
+echo $DT_ENV_URL
+echo $DT_API_TOKEN
+echo $DT_PAAS_TOKEN
 
-
- sudo DT_ENV_URL=$DT_ENV_URL DT_API_TOKEN=$DT_API_TOKEN DT_PAAS_TOKEN=$DT_PAAS_TOKEN shell_user=$shell_user shell_password=$shell_password /tmp/init.sh
+sudo DT_ENV_URL=$DT_ENV_URL DT_API_TOKEN=$DT_API_TOKEN DT_PAAS_TOKEN=$DT_PAAS_TOKEN shell_user=$shell_user shell_password=$shell_password /tmp/init.sh
