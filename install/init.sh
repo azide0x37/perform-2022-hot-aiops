@@ -14,4 +14,4 @@ sudo apt install git -y -q
 echo "CLONING REPO"
 git clone -q https://github.com/dynatrace-ace/perform-2022-hot-aiops.git
 sudo chmod +x -R ./perform-2022-hot-aiops/install
-sudo DT_ENV_URL=$DT_ENV_URL DT_API_TOKEN=$DT_API_TOKEN DT_PAAS_TOKEN=$DT_PAAS_TOKEN shell_user=$shell_user shell_password=$shell_password ./perform-2022-hot-aiops/install/setup-0.sh
+sudo DT_ENV_URL=$DT_ENV_URL DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN shell_user=$shell_user shell_password=$shell_password ./perform-2022-hot-aiops/install/setup-0.sh

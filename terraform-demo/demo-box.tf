@@ -77,12 +77,11 @@ resource "google_compute_instance" "acebox" {
 
   provisioner "remote-exec" {
     inline = [
-        "sudo chmod +x /tmp/pre-init.sh",
         "sudo chmod +x /tmp/init.sh",
         "echo 'INSTALLING USER'",
         "sudo usermod -aG sudo ${var.acebox_user}",
         "echo ${var.acebox_user}:${var.acebox_password} | sudo chpasswd",
-        "sudo DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env.id} DT_CLUSTER_TOKEN=${dynatrace_environment.vhot_env.api_token} shell_user=${var.acebox_user} shell_password=${var.acebox_password} /tmp/pre-init.sh"
+        "sudo DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env.id} DT_CLUSTER_TOKEN=${dynatrace_environment.vhot_env.api_token} shell_user=${var.acebox_user} shell_password=${var.acebox_password} /tmp/init.sh"
       ]
   }
 }

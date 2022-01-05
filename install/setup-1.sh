@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-echo "input variables"
+echo "---------------------- INPUT VARIABLES"
 echo $DT_ENV_URL
+echo $DT_CLUSTER_TOKEN
 #########################################
 #  VARIABLES                            #
 #########################################
@@ -25,7 +26,7 @@ git_user="dynatrace"
 git_password="dynatrace"
 git_email="ace@ace.ace"
 USER="ace"
-
+DT_CREATE_ENV_TOKENS=true
 ################################
 #      HELPER FUNCTIONS        #
 ################################
@@ -113,6 +114,10 @@ if [ "$DT_CREATE_ENV_TOKENS" != "false" ]; then
     --data-raw "${api_token_body}")
     DT_API_TOKEN=$(echo $DT_API_TOKEN_RESPONSE | jq -r '.token' )
 fi
+echo $DT_CLUSTER_TOKEN
+echo $DT_ENV_URL
+echo $DT_API_TOKEN
+echo $DT_PAAS_TOKEN
 ##############################
 # Retrieve Hostname and IP   #
 ##############################
@@ -579,7 +584,7 @@ keptn add-resource --project=easytravel --resource=/home/$shell_user/keptn/easyt
 keptn configure monitoring dynatrace --project=easytravel
 keptn add-resource --project=easytravel --stage=production --service=allproblems --resource=/home/$shell_user/keptn/easytravel/slo.yaml --resourceUri=slo.yaml
 
-echo "Update keptn problem notification to forward problems to easytravel project"
+echo "UPDATE KEPTN PROBLEM NOTIFICATION TO FOWARD PROBLEMS TO EASYTRAVEL PROJECT"
 #DT_API_TOKEN=$(kubectl get secret dynatrace -n keptn -ojsonpath='{.data.DT_API_TOKEN}' | base64 --decode)
 #DT_ENV_URL=$(kubectl get secret dynatrace -n keptn -ojsonpath='{.data.DT_TENANT}' | base64 --decode)
 
@@ -621,7 +626,7 @@ curl -k --location --request PUT "${DT_ENV_URL}/api/config/v1/notifications/$PRO
 awx_token=$(echo -n $login_user:$login_password | base64)
 keptn create secret awx --from-literal="token=$awx_token" --scope=keptn-webhook-service
 
-echo "generate webhook file for awx (needs to be manually created on keptn bridge and updated"
+echo "GENERATE WEBHOOK FILE FOR AWX (needs to be manually created on keptn bridge and updated"
 (
 cat <<EOF
 apiVersion: webhookconfig.keptn.sh/v1alpha1
