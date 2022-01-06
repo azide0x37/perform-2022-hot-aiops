@@ -1,0 +1,21 @@
+{
+ "displayName": "{{.name}}",
+ "eventTypeFilters": [
+  {
+   "predefinedEventFilter": {
+    "eventType": "OSI_HIGH_MEMORY",
+    "negate": false
+   }
+  }
+ ],
+ "managementZoneId": 2935842532445166600,
+ "metadata": {
+  "clusterVersion": "1.232.87.20211229-102300",
+  "configurationVersions": [],
+  "currentConfigurationVersions": [
+   "7.0.3"
+  ]
+ },
+ "mzId": "2935842532445166561",
+ "rules": []
+}

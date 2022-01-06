@@ -584,45 +584,28 @@ keptn add-resource --project=easytravel --resource=/home/$shell_user/keptn/easyt
 keptn configure monitoring dynatrace --project=easytravel
 keptn add-resource --project=easytravel --stage=production --service=allproblems --resource=/home/$shell_user/keptn/easytravel/slo.yaml --resourceUri=slo.yaml
 
+###################################
+#  Set Dynatrace problem config   #
+###################################
+
 echo "UPDATE KEPTN PROBLEM NOTIFICATION TO FOWARD PROBLEMS TO EASYTRAVEL PROJECT"
-#DT_API_TOKEN=$(kubectl get secret dynatrace -n keptn -ojsonpath='{.data.DT_API_TOKEN}' | base64 --decode)
-#DT_ENV_URL=$(kubectl get secret dynatrace -n keptn -ojsonpath='{.data.DT_TENANT}' | base64 --decode)
 
-PROBLEM_NOTIFICATION_ID=$(curl -k -s --location --request GET "${DT_ENV_URL}/api/config/v1/notifications" \
-  --header "Authorization: Api-Token $DT_API_TOKEN" \
-  --header "Content-Type: application/json" | jq -r .values[].id)
 
-ALERTING_PROFILE_ID=$(curl -k -s --location --request GET "${DT_ENV_URL}/api/config/v1/notifications/$PROBLEM_NOTIFICATION_ID" \
-  --header "Authorization: Api-Token $DT_API_TOKEN" \
-  --header "Content-Type: application/json" | jq -r .alertingProfile)
-
-keptn_notification_body=$(cat <<EOF
-{
-    "type": "WEBHOOK",
-    "name": "Keptn Problem Notification",
-    "alertingProfile": "$ALERTING_PROFILE_ID",
-    "active": true,
-    "url": "$KEPTN_ENDPOINT/v1/event",
-    "acceptAnyCertificate": true,
-    "payload": "{\n    \"specversion\":\"1.0\",\n    \"shkeptncontext\":\"{PID}\",\n    \"type\":\"sh.keptn.events.problem\",\n    \"source\":\"dynatrace\",\n    \"id\":\"{PID}\",\n    \"time\":\"\",\n    \"contenttype\":\"application/json\",\n    \"data\": {\n        \"State\":\"{State}\",\n        \"ProblemID\":\"{ProblemID}\",\n        \"PID\":\"{PID}\",\n        \"ProblemTitle\":\"{ProblemTitle}\",\n        \"ProblemURL\":\"{ProblemURL}\",\n        \"ProblemDetails\":{ProblemDetailsJSON},\n        \"Tags\":\"{Tags}\",\n        \"ImpactedEntities\":{ImpactedEntities},\n        \"ImpactedEntity\":\"{ImpactedEntity}\",\n        \"KeptnProject\" : \"easytravel\",\n        \"KeptnService\" : \"allproblems\",\n        \"KeptnStage\" : \"production\"\n    }\n}",
-    "headers": [
-        {
-            "name": "x-token",
-            "value": "$KEPTN_API_TOKEN"
-        },
-        {
-            "name": "Content-Type",
-            "value": "application/cloudevents+json"
-        }
-    ],
-    "notifyEventMergesEnabled": false
-}
+mkdir /home/$USER/monaco/
+sudo wget https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/v1.6.0/monaco-linux-amd64
+sudo chmod +rx monaco-linux-amd64
+echo "generating script" 
+(
+ cat <<EOF
+demo:
+    - name: "demo"
+    - env-url: $DT_ENV_URL
+    - env-token-name: "DT_API_TOKEN"
 EOF
-)
-
-curl -k --location --request PUT "${DT_ENV_URL}/api/config/v1/notifications/$PROBLEM_NOTIFICATION_ID" --header "Authorization: Api-Token $DT_API_TOKEN" \
-  --header "Content-Type: application/json" --data-raw "${keptn_notification_body}"
-
+) | tee /home/$USER/perform-2022-hot-aiops/install/monaco
+cd /home/$USER/perform-2022-hot-aiops/install/monaco
+./monaco deploy -e=./env.yaml -p=default .
+cd -
 awx_token=$(echo -n $login_user:$login_password | base64)
 keptn create secret awx --from-literal="token=$awx_token" --scope=keptn-webhook-service
 
