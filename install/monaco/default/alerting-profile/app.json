@@ -1,13 +1,6 @@
 {
  "displayName": "{{.name}}",
- "eventTypeFilters": [
-  {
-   "predefinedEventFilter": {
-    "eventType": "OSI_HIGH_MEMORY",
-    "negate": false
-   }
-  }
- ],
+ "eventTypeFilters": [],
  "managementZoneId": "{{.mz}}",
  "mzId": "{{.mz}}",
  "rules": []

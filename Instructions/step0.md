@@ -3,7 +3,7 @@
 We will install/configure the require application into our demo environment to simulate a production application running.
 
 1. Get into the development environment
-using the console or a ssh client log into your VM. (Check the provided credentials on the Dynatrace University).
+using the web terminal or a ssh client log into your VM. (Check the provided credentials on the Dynatrace University).
 2. Run the configuration script (setup-1.sh) located in the folder.
 ```(bash)
 ./install/setup/setup-1.sh
