@@ -1,3 +1,3 @@
 # Exercise 1 - Setup environment
 
-![Next](exercises/exercise-2.md)
+[Next](exercises/exercise-2.md)
