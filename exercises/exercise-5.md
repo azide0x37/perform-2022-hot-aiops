@@ -1,3 +1,3 @@
 # Exercise 5 - Setup environment
 
-[Next](exercises/exercise-6.md)
+[Next](./exercise-6.md)
