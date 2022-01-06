@@ -6,6 +6,7 @@ Services already installed:
 
 - ubuntu libraries including jq,git
 - Docker service
+- K3s as our kubernetes cluster
 
 1. Get into the development environment
 using the web terminal or a ssh client log into your VM. (Check the provided credentials on the Dynatrace University).
