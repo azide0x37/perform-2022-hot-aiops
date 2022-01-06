@@ -590,22 +590,26 @@ keptn add-resource --project=easytravel --stage=production --service=allproblems
 
 echo "UPDATE KEPTN PROBLEM NOTIFICATION TO FOWARD PROBLEMS TO EASYTRAVEL PROJECT"
 
-
 mkdir /home/$USER/monaco/
 sudo wget https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/v1.6.0/monaco-linux-amd64
 sudo chmod +rx monaco-linux-amd64
+export DYNATRACE_TOKEN=$DT_API_TOKEN
 echo "generating script" 
 (
  cat <<EOF
 demo:
     - name: "demo"
     - env-url: $DT_ENV_URL
-    - env-token-name: "DT_API_TOKEN"
+    - env-token-name: "DYNATRACE_TOKEN"
 EOF
 ) | tee /home/$USER/perform-2022-hot-aiops/install/monaco
 cd /home/$USER/perform-2022-hot-aiops/install/monaco
 ./monaco deploy -e=./env.yaml -p=default .
 cd -
+
+###################################
+#  Configure AWX webhook file     #
+###################################
 awx_token=$(echo -n $login_user:$login_password | base64)
 keptn create secret awx --from-literal="token=$awx_token" --scope=keptn-webhook-service
 

@@ -37,3 +37,4 @@ terraform.rc
 # Ignore generated ssh keys
 *key
 terraform-demo/temp1/
+install/monaco/.logs/
