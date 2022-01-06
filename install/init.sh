@@ -3,10 +3,10 @@ echo "getting vm ready"
 # PRE SETUP                              #
 #########################################
 echo "UPDATING REPO"
-apt-get -q update -y 
-apt-get -q install -y -q git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
+apt-get update -y > /dev/null
+apt-get -q install -y git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
  libatk1.0-0 libc6:amd64 libcairo2 libcups2 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 libxss1 xdg-utils \
- libminizip-dev libgbm-dev libflac8 apache2-utils
+ libminizip-dev libgbm-dev libflac8 apache2-utils > /dev/null
 
 apt-get -q dist-upgrade -y 
 apt-get -q -f install

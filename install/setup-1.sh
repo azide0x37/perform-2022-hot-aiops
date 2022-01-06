@@ -590,9 +590,6 @@ keptn add-resource --project=easytravel --stage=production --service=allproblems
 
 echo "UPDATE KEPTN PROBLEM NOTIFICATION TO FOWARD PROBLEMS TO EASYTRAVEL PROJECT"
 
-mkdir /home/$USER/monaco/
-sudo wget https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/v1.6.0/monaco-linux-amd64
-sudo chmod +rx monaco-linux-amd64
 export DYNATRACE_TOKEN=$DT_API_TOKEN
 export NEW_CLI=1
 echo "generating script" 
@@ -606,7 +603,7 @@ EOF
 ) | tee /home/$USER/perform-2022-hot-aiops/install/monaco/env.yaml
 cd /home/$USER/perform-2022-hot-aiops/install/monaco
 sed -i -e "s|KEPTN_API_TOKEN|$KEPTN_API_TOKEN|"  -e "s|KEPTN_ENDPOINT|$KEPTN_ENDPOINT/v1/event|" ./default/notification/config.json
-./monaco-linux-amd64 deploy -e=./env.yaml -p=default .
+./monaco deploy -e=./env.yaml -p=default .
 cd -
 
 ###################################
