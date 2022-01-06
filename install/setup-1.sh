@@ -535,27 +535,27 @@ curl -s -k -d '{"name":"easytravel", "private":false, "auto-init":true}' -H "Con
 
 echo "Configure easytravel project..."
 
-echo 'apiVersion: "spec.keptn.sh/0.2.2"
-kind: "Shipyard"
-metadata:
-  name: "shipyard-easytravel"
-spec:
-  stages:
-    - name: "production"
-      sequences:
-        - name: "remediation"
-          triggeredOn:
-            - event: "production.remediation.finished"
-              selector:
-                match:
-                  evaluation.result: "fail"
-          tasks:
-            - name: "action"
-            - name: "evaluation"
-              triggeredAfter: "2m"
-              properties:
-                timeframe: "2m"' > /home/$shell_user/keptn/easytravel/shipyard.yaml
-keptn create project easytravel --shipyard=/home/$shell_user/keptn/easytravel/shipyard.yaml --git-user=$git_user --git-token=$gitea_pat --git-remote-url=http://$gitea_domain/$git_org/easytravel.git
+# echo 'apiVersion: "spec.keptn.sh/0.2.2"
+# kind: "Shipyard"
+# metadata:
+#   name: "shipyard-easytravel"
+# spec:
+#   stages:
+#     - name: "production"
+#       sequences:
+#         - name: "remediation"
+#           triggeredOn:
+#             - event: "production.remediation.finished"
+#               selector:
+#                 match:
+#                   evaluation.result: "fail"
+#           tasks:
+#             - name: "action"
+#             - name: "evaluation"
+#               triggeredAfter: "2m"
+#               properties:
+#                 timeframe: "2m"' > /home/$shell_user/keptn/easytravel/shipyard.yaml
+keptn create project easytravel --shipyard=/home/$USER/perform-2022-hot-aiops/install/keptn/shipyard.yaml --git-user=$git_user --git-token=$gitea_pat --git-remote-url=http://$gitea_domain/$git_org/easytravel.git
 
 # Create catch all service for dynatrace detected problems
 keptn create service allproblems --project=easytravel
@@ -604,6 +604,7 @@ demo:
 EOF
 ) | tee /home/$USER/perform-2022-hot-aiops/install/monaco
 cd /home/$USER/perform-2022-hot-aiops/install/monaco
+sed -i -e "s|KEPTN_API_TOKEN|$KEPTN_API_TOKEN|"  -e "s|KEPTN_ENDPOINT|$KEPTN_ENDPOINT/v1/event|" ./default/notification/config.json
 ./monaco deploy -e=./env.yaml -p=default .
 cd -
 
