@@ -9,5 +9,5 @@ We will be using an application called EasyTravel that provides a web portal whi
 You can navigate into dashboard.xx.xx.xx.nip.io where xx.xx.xx is your IP assigned in the Dynatrace University.
 
 ## Remediation overview
-
+This is the remediation workflow that will be implemented
 ![workflow](./workflow.png)
