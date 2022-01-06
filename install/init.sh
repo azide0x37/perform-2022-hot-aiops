@@ -3,14 +3,14 @@ echo "getting vm ready"
 # PRE SETUP                              #
 #########################################
 echo "UPDATING REPO"
-apt-get --qq update -y 
-apt-get --qq install -y -q git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
+apt-get -q update -y 
+apt-get -q install -y -q git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
  libatk1.0-0 libc6:amd64 libcairo2 libcups2 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 libxss1 xdg-utils \
  libminizip-dev libgbm-dev libflac8 apache2-utils
 
-apt-get --qq dist-upgrade -y 
-apt-get -qq -f install
-sudo apt --qq install git -y
+apt-get -q dist-upgrade -y 
+apt-get -q -f install
+sudo apt install -q git -y
 echo "CLONING REPO"
 git clone -q https://github.com/dynatrace-ace/perform-2022-hot-aiops.git
 sudo chmod +x -R ./perform-2022-hot-aiops/install
