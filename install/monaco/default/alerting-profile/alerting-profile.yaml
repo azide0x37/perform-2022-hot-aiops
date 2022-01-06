@@ -5,3 +5,4 @@ Default:
 - name: Default
 app:
 - name: app
+  mz: /default/management-zone/app.id

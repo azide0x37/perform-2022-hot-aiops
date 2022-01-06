@@ -1,11 +1,11 @@
 {
  "acceptAnyCertificate": true,
  "active": true,
- "alertingProfile": "63aee636-ce9f-348e-b6fd-b8c999c135c1",
+ "alertingProfile": "{{.profile}}",
  "headers": [
   {
    "name": "x-token",
-   "value": "***574***"
+   "value": "test"
   },
   {
    "name": "Content-Type",
