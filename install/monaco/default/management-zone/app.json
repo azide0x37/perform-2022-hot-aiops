@@ -21,7 +21,7 @@
     }
    ],
    "enabled": true,
-   "propagationTypes": [],
+   "propagationTypes": [ "SERVICE_TO_PROCESS_GROUP_LIKE"],
    "type": "SERVICE"
   }
  ]

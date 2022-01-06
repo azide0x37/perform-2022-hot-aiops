@@ -16,4 +16,4 @@ This is the remediation workflow that will be implemented
 ## Exercises
 1. Exercise 1 ![ex1](exercises/exercise-1.md)
 2. Exercise 2 ![ex2](exercises/exercise-2.md)
-3. Exercise 3 ![ex3](exercises/exercise-3.md)
+3. Exercise 3 ![ex3](exercises/exercise-3.md)   

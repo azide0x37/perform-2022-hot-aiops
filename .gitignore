@@ -38,3 +38,4 @@ terraform.rc
 *key
 terraform-demo/temp1/
 install/monaco/.logs/
+install/monaco/demo/
