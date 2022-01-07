@@ -2,7 +2,7 @@
 ################################
 #      SETUP 2                 #
 ################################
-echo "-------------SETUP 2 --------------------"
+echo "############### SETUP 2 - K3s and One Agent ###########################"
 #########################################
 #  VARIABLES                            #
 #########################################
@@ -42,3 +42,5 @@ echo "INSTALLING ONE AGENT"
 wget -nv -O /tmp/oneagent.sh "$DT_ENV_URL/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=$DT_PAAS_TOKEN&arch=x86&flavor=default"
 sh /tmp/oneagent.sh --set-app-log-content-access=true --set-system-logs-access-enabled=true --set-infra-only=false --set-host-group=easytravel-remediation
 
+###########  Part 3  ##############
+./perform-2022-hot-aiops/install/setup-3.sh

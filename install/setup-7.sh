@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-echo "---------------------- INPUT VARIABLES"
-echo $DT_ENV_URL
-echo $DT_CLUSTER_TOKEN
+################################
+#      SETUP 7                 #
+################################
+echo "############### SETUP 7 - Lab Setup ###########################"
 #########################################
 #  VARIABLES                            #
 #########################################
@@ -107,3 +108,7 @@ cd /home/$USER/perform-2022-hot-aiops/install/monaco
 sed -i -e "s|KEPTN_API_TOKEN|$KEPTN_API_TOKEN|"  -e "s|KEPTN_ENDPOINT|$KEPTN_ENDPOINT/v1/event|" ./default/notification/config.json
 ./monaco deploy -e=./env.yaml -p=default .
 cd -
+
+
+###########  Part 8  ##############
+./perform-2022-hot-aiops/install/setup-8.sh

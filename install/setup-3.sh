@@ -2,17 +2,15 @@
 ################################
 #      SETUP 3                 #
 ################################
-echo "-------------SETUP 3 --------------------"
+echo "############### SETUP 3 - KEPTN ###########################"
 #########################################
 #  VARIABLES                            #
 #########################################
 echo "Starting installation"
 keptn_version=0.11.4
-domain="nip.io"
 source_repo="https://github.com/dynatrace-ace/perform-2022-hot-aiops.git"
 dynatrace_operator_version=v0.2.2
 dynatrace_service_version=0.19.0
-ansible_operator_version=0.13.0
 continuous_delivery=false
 nginx_service_type=ClusterIP
 nginx_ingress_service_type=NodePort
@@ -20,11 +18,7 @@ login_user="admin"
 login_password="dynatrace"
 git_org="perform"
 git_repo="auto-remediation"
-git_user="dynatrace"
-git_password="dynatrace"
-git_email="ace@ace.ace"
 USER="ace"
-DT_CREATE_ENV_TOKENS=true
 
 ##########################################
 #  INSTALL KEPTN CLI AND CONTROL PLANE   #
@@ -224,3 +218,10 @@ attachRules:
       key: keptn_managed' > /home/$shell_user/keptn/dynatrace/dynatrace.conf.yaml
 keptn add-resource --project=dynatrace --stage=quality-gate --resource=/home/$shell_user/keptn/dynatrace/dynatrace.conf.yaml --resourceUri=dynatrace/dynatrace.conf.yaml
 
+############   EXPORT VARIABLES   ###########
+echo "export variables"
+export KEPTN_ENDPOINT=$KEPTN_ENDPOINT
+export KEPTN_BRIDGE_URL=$KEPTN_BRIDGE_URL
+export KEPTN_API_TOKEN=$KEPTN_API_TOKEN
+###########  Part 4  ##############
+./perform-2022-hot-aiops/install/setup-4.sh

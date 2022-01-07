@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-echo "---------------------- INPUT VARIABLES"
-echo $DT_ENV_URL
-echo $DT_CLUSTER_TOKEN
+################################
+#      SETUP 5 -AWX            #
+################################
+echo "############### SETUP 5 - AWX ###########################"
 #########################################
 #  VARIABLES                            #
 #########################################
@@ -10,14 +11,8 @@ keptn_version=0.11.4
 domain="nip.io"
 source_repo="https://github.com/dynatrace-ace/perform-2022-hot-aiops.git"
 clone_folder=perform-2022-hot-aiops
-dynatrace_operator_version=v0.2.2
-dynatrace_service_version=0.19.0
+
 ansible_operator_version=0.13.0
-gitea_helm_chart_version=4.1.1
-gitea_image_tag=1.15.4
-continuous_delivery=false
-nginx_service_type=ClusterIP
-nginx_ingress_service_type=NodePort
 login_user="admin"
 login_password="dynatrace"
 git_org="perform"
@@ -81,3 +76,11 @@ kubectl -n $AWX_NAMESPACE rollout status deployment/awx-aiops
 echo "Running playbook to configure AWX"
 ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_domain ingress_domain=$ingress_domain awx_admin_username=$login_user dt_environment_url=$DT_ENV_URL \
   dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http shell_user=$shell_user shell_password=$shell_password keptn_api_token=$KEPTN_API_TOKEN"
+
+
+############   EXPORT VARIABLES   ###########
+echo "export variables"
+export AWX_NAMESPACE=$AWX_NAMESPACE
+
+###########  Part 6  ##############
+./perform-2022-hot-aiops/install/setup-6.sh

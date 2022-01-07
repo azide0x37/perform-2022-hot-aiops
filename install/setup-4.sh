@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
-echo "---------------------- INPUT VARIABLES"
-echo $DT_ENV_URL
-echo $DT_CLUSTER_TOKEN
+################################
+#      SETUP 4                 #
+################################
+echo "############### SETUP 4 - GITEA ###########################"
 #########################################
 #  VARIABLES                            #
 #########################################
 echo "Starting installation"
 keptn_version=0.11.4
-domain="nip.io"
 source_repo="https://github.com/dynatrace-ace/perform-2022-hot-aiops.git"
 clone_folder=perform-2022-hot-aiops
-dynatrace_operator_version=v0.2.2
-dynatrace_service_version=0.19.0
-ansible_operator_version=0.13.0
 gitea_helm_chart_version=4.1.1
 gitea_image_tag=1.15.4
 continuous_delivery=false
@@ -26,7 +23,6 @@ git_user="dynatrace"
 git_password="dynatrace"
 git_email="ace@ace.ace"
 USER="ace"
-DT_CREATE_ENV_TOKENS=true
 ################################
 #      HELPER FUNCTIONS        #
 ################################
@@ -73,4 +69,11 @@ git commit -m "first commit"
 git push -u origin master
 git checkout .
 git pull
-echo "INSTALLING PART 2"
+
+############   EXPORT VARIABLES   ###########
+echo "export variables"
+export gitea_pat=$gitea_pat
+export gitea_domain=$gitea_domain
+
+###########  Part 5  ##############
+./perform-2022-hot-aiops/install/setup-5.sh

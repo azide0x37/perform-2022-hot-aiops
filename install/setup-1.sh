@@ -2,7 +2,7 @@
 ################################
 #      SETUP 1                 #
 ################################
-echo "-------------SETUP 1 --------------------"
+echo "############# SETUP 1 - Dynatrace Token and VM #############"
 domain="nip.io"
 USER="ace"
 DT_CREATE_ENV_TOKENS=true
