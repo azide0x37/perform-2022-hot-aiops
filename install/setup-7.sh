@@ -111,4 +111,4 @@ cd -
 
 
 ###########  Part 8  ##############
-/home/$USER/install/setup-8.sh
+/home/$shell_user/perform-2022-hot-aiops/install/setup-8.sh

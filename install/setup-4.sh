@@ -76,4 +76,4 @@ export gitea_pat=$gitea_pat
 export gitea_domain=$gitea_domain
 
 ###########  Part 5  ##############
-/home/$USER/install/setup-5.sh
+/home/$shell_user/perform-2022-hot-aiops/install/setup-5.sh

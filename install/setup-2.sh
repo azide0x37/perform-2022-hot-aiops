@@ -44,5 +44,5 @@ sh /tmp/oneagent.sh --set-app-log-content-access=true --set-system-logs-access-e
 
 ###########  Part 3  ##############
 if [ $PROGRESS_CONTROL -gt 3 ]; then
-/home/$USER/install/setup-3.sh
+/home/$shell_user/perform-2022-hot-aiops/install/setup-3.sh
 fi
