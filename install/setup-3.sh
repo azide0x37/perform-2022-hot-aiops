@@ -18,7 +18,6 @@ login_user="admin"
 login_password="dynatrace"
 git_org="perform"
 git_repo="auto-remediation"
-USER="ace"
 
 ##########################################
 #  INSTALL KEPTN CLI AND CONTROL PLANE   #

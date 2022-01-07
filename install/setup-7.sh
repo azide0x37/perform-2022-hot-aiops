@@ -26,7 +26,6 @@ git_repo="auto-remediation"
 git_user="dynatrace"
 git_password="dynatrace"
 git_email="ace@ace.ace"
-USER="ace"
 DT_CREATE_ENV_TOKENS=true
 
 ##################################
@@ -58,7 +57,7 @@ echo "Configure easytravel project..."
 #               triggeredAfter: "2m"
 #               properties:
 #                 timeframe: "2m"' > /home/$shell_user/keptn/easytravel/shipyard.yaml
-keptn create project easytravel --shipyard=/home/$USER/perform-2022-hot-aiops/install/keptn/shipyard.yaml --git-user=$git_user --git-token=$gitea_pat --git-remote-url=http://$gitea_domain/$git_org/easytravel.git
+keptn create project easytravel --shipyard=/home/$shell_user/perform-2022-hot-aiops/install/keptn/shipyard.yaml --git-user=$git_user --git-token=$gitea_pat --git-remote-url=http://$gitea_domain/$git_org/easytravel.git
 
 # Create catch all service for dynatrace detected problems
 keptn create service allproblems --project=easytravel
@@ -103,8 +102,8 @@ demo:
     - env-url: $DT_ENV_URL
     - env-token-name: "DYNATRACE_TOKEN"
 EOF
-) | tee /home/$USER/perform-2022-hot-aiops/install/monaco/env.yaml
-cd /home/$USER/perform-2022-hot-aiops/install/monaco
+) | tee /home/$shell_user/perform-2022-hot-aiops/install/monaco/env.yaml
+cd /home/$shell_user/perform-2022-hot-aiops/install/monaco
 sed -i -e "s|KEPTN_API_TOKEN|$KEPTN_API_TOKEN|"  -e "s|KEPTN_ENDPOINT|$KEPTN_ENDPOINT/v1/event|" ./default/notification/config.json
 ./monaco deploy -e=./env.yaml -p=default .
 cd -

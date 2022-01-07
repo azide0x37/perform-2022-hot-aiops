@@ -9,7 +9,6 @@ echo "############### SETUP 2 - K3s and One Agent ###########################"
 echo "Starting installation"
 source_repo="https://github.com/dynatrace-ace/perform-2022-hot-aiops.git"
 git_email="ace@ace.ace"
-USER="ace"
 DT_CREATE_ENV_TOKENS=true
 
 ##############################

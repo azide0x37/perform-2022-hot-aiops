@@ -20,7 +20,6 @@ git_repo="auto-remediation"
 git_user="dynatrace"
 git_password="dynatrace"
 git_email="ace@ace.ace"
-USER="ace"
 DT_CREATE_ENV_TOKENS=true
 
 ######################################
@@ -63,7 +62,7 @@ spec:
 EOF
 sleep 10
 kubectl -n $AWX_NAMESPACE rollout status deployment/awx-aiops
-# echo "CREATING USER FOR ANSIBLE"
+# echo "CREATING FOR ANSIBLE"
 # sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
 # ansibleuser="ansiblesa"
 # sudo useradd -m $ansibleuser

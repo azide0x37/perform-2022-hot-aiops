@@ -4,7 +4,6 @@
 ################################
 echo "############# SETUP 1 - Dynatrace Token and VM #############"
 domain="nip.io"
-USER="ace"
 DT_CREATE_ENV_TOKENS=true
 echo DT_ENV_URL=$DT_ENV_URL
 echo DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN

@@ -4,7 +4,6 @@
 echo "############# SETUP 0 #############"
 ############   COPY FOLDER        ###########
 echo "COPY FOLDER"
-USER="ace"
 cp -R /home/$shell_user/perform-2022-hot-aiops/repos /home/$shell_user/
 
 ############## INSTALL REQUIRED PACKAGES  ##############
@@ -42,6 +41,6 @@ export DT_ENV_URL=$DT_ENV_URL
 export DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN
 export shell_user=$shell_user
 export shell_password=$shell_password
-export USER="ace"
+
 ###########  Part 1  ##############
 /home/$shell_user/perform-2022-hot-aiops/install/setup-1.sh

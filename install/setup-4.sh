@@ -22,7 +22,7 @@ git_repo="auto-remediation"
 git_user="dynatrace"
 git_password="dynatrace"
 git_email="ace@ace.ace"
-USER="ace"
+
 ################################
 #      HELPER FUNCTIONS        #
 ################################
