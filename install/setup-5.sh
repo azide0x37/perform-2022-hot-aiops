@@ -83,4 +83,4 @@ echo "export variables"
 export AWX_NAMESPACE=$AWX_NAMESPACE
 
 ###########  Part 6  ##############
-./perform-2022-hot-aiops/install/setup-6.sh
+/home/$USER/install/setup-6.sh

@@ -85,4 +85,4 @@ helm upgrade -i ace-dashboard /tmp/dashboard-helm-chart --namespace dashboard --
 
 
 ###########  Part 7  ##############
-./perform-2022-hot-aiops/install/setup-7.sh
+/home/$USER/install/setup-7.sh

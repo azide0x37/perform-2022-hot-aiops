@@ -43,4 +43,4 @@ export shell_user=$shell_user
 export shell_password=$shell_password
 
 ###########  Part 1  ##############
-./perform-2022-hot-aiops/install/setup-1.sh
+/home/$USER/install/setup-1.sh
