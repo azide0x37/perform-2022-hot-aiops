@@ -4,7 +4,8 @@
 echo "############# SETUP 0 #############"
 ############   COPY FOLDER        ###########
 echo "COPY FOLDER"
-cp -R /home/$USER/perform-2022-hot-aiops/repos /home/$USER/
+USER="ace"
+cp -R /home/$shell_user/perform-2022-hot-aiops/repos /home/$shell_user/
 
 ############## INSTALL REQUIRED PACKAGES  ##############
 echo "installing JQ"
@@ -41,6 +42,6 @@ export DT_ENV_URL=$DT_ENV_URL
 export DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN
 export shell_user=$shell_user
 export shell_password=$shell_password
-
+export USER="ace"
 ###########  Part 1  ##############
-/home/$USER/install/setup-1.sh
+/home/$shell_user/install/setup-1.sh
