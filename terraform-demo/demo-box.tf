@@ -63,11 +63,11 @@ resource "google_compute_instance" "acebox" {
   }
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y &> /dev/null",
-      "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config",
-      "sudo service ssh restart",
-      "sudo usermod -aG sudo ${var.acebox_user}",
-      "echo '${var.acebox_user}:${var.acebox_password}' | sudo chpasswd"
+      "sudo apt-get -q update && sudo DEBIAN_FRONTEND=noninteractive apt-get -q upgrade -y",
+      
+     // "sudo service ssh restart",
+    //  "sudo usermod -aG sudo ${var.acebox_user}",
+    //  "echo '${var.acebox_user}:${var.acebox_password}' | sudo chpasswd"
     ]
   }
   provisioner "file" {
@@ -78,9 +78,11 @@ resource "google_compute_instance" "acebox" {
   provisioner "remote-exec" {
     inline = [
         "sudo chmod +x /tmp/init.sh",
-       // "echo 'INSTALLING USER'",
-       // "sudo usermod -aG sudo ${var.acebox_user}",
-      //  "echo ${var.acebox_user}:${var.acebox_password} | sudo chpasswd",
+        "echo 'INSTALLING USER'",
+        "sudo usermod -aG sudo ${var.acebox_user}",
+        "echo ${var.acebox_user}:${var.acebox_password} | sudo chpasswd",
+        "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config",
+        "sudo service ssh restart",
         "sudo DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env.id} DT_CLUSTER_TOKEN=${dynatrace_environment.vhot_env.api_token} shell_user=${var.acebox_user} shell_password=${var.acebox_password} /tmp/init.sh"
       ]
   }
