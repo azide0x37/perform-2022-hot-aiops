@@ -2,7 +2,8 @@ terraform {
   required_version = ">= 0.12.20"
   required_providers {
     dynatrace = {
-       source = "drqc/dynatrace"
+      // source = "drqc/dynatrace"
+      source ="dynatrace.com/local/dynatrace"
        version = "1.0.4"
     }
     google = {
