@@ -1,7 +1,7 @@
 ################################
 #      SETUP 0                 #
 ################################
-export PROGRESS_CONTROL=9
+
 echo "############# SETUP 0 #############"
 ############   COPY FOLDER        ###########
 echo "COPY FOLDER"
@@ -44,6 +44,7 @@ export DT_ENV_URL=$DT_ENV_URL
 export DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN
 export shell_user=$shell_user
 export shell_password=$shell_password
+export PROGRESS_CONTROL=$PROGRESS_CONTROL
 
 ###########  Part 1  ##############
 if [ "$PROGRESS_CONTROL" -gt "1" ]; then

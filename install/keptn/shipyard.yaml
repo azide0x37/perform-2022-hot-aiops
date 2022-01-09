@@ -21,5 +21,19 @@ spec:
           triggeredAfter: "2m"
           properties:
               timeframe: "2m"
+   - name: "production-disk"
+     sequences:
+      - name: "auto_healing_disk"
+        tasks:
+        - name: clean_disk
+        - name: evaluation
+          triggeredAfter: "5m"
+          properties:
+            timeframe: "2m"
+      - name: "auto_healing_memory_remediation_failed"
+        triggeredon: auto_healing_disk result = "fail"
+        tasks:
+        - name: escalate_human
+
 
 

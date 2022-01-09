@@ -19,4 +19,4 @@ sudo chmod +x -R ./perform-2022-hot-aiops/install
 #DT_ENV_URL => URL for the current dynatrace environment
 #shell_user => user with root access for the exercises and  configuration
 
-sudo DT_ENV_URL=$DT_ENV_URL DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN shell_user=$shell_user shell_password=$shell_password ./perform-2022-hot-aiops/install/setup-0.sh
+sudo PROGRESS_CONTROL=$PROGRESS_CONTROL DT_ENV_URL=$DT_ENV_URL DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN shell_user=$shell_user shell_password=$shell_password ./perform-2022-hot-aiops/install/setup-0.sh
