@@ -61,15 +61,6 @@ resource "google_compute_instance" "acebox" {
     user        = var.acebox_user
     private_key = tls_private_key.acebox_key.private_key_pem
   }
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get -q update && sudo DEBIAN_FRONTEND=noninteractive apt-get -q upgrade -y",
-      
-     // "sudo service ssh restart",
-    //  "sudo usermod -aG sudo ${var.acebox_user}",
-    //  "echo '${var.acebox_user}:${var.acebox_password}' | sudo chpasswd"
-    ]
-  }
   provisioner "file" {
     source      = "${path.module}/../install/"
     destination = "/tmp/"
@@ -77,6 +68,7 @@ resource "google_compute_instance" "acebox" {
 
   provisioner "remote-exec" {
     inline = [
+       "sudo apt-get -q update && sudo DEBIAN_FRONTEND=noninteractive apt-get -q upgrade -y",
         "sudo chmod +x /tmp/init.sh",
         "echo 'INSTALLING USER'",
         "sudo usermod -aG sudo ${var.acebox_user}",

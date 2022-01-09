@@ -9,16 +9,16 @@ cp -R /home/$shell_user/perform-2022-hot-aiops/repos /home/$shell_user/
 
 ############## INSTALL REQUIRED PACKAGES  ##############
 echo "installing JQ"
-sudo apt-get install jq -y 
+sudo apt-get -q install jq -y 
 
 echo "Installing packages"
-apt-get update -y 
-apt-get install -y git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
+apt-get -q update -y 
+apt-get -q install -y git vim jq build-essential software-properties-common default-jdk libasound2 libatk-bridge2.0-0 \
  libatk1.0-0 libc6:amd64 libcairo2 libcups2 libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 libxss1 xdg-utils \
  libminizip-dev libgbm-dev libflac8 apache2-utils 
 add-apt-repository --yes --update ppa:ansible/ansible
-apt-get update -y 
-apt-get install -y ansible
+apt-get -q update -y 
+apt-get -q install -y ansible
 apt install docker.io -y
 echo '{
 "log-driver": "json-file",
