@@ -43,4 +43,6 @@ export shell_user=$shell_user
 export shell_password=$shell_password
 
 ###########  Part 1  ##############
-/home/$shell_user/perform-2022-hot-aiops/install/setup-1.sh
+if (( $PROGRESS_CONTROL > 1 )); then
+    /home/$shell_user/perform-2022-hot-aiops/install/setup-1.sh
+fi
