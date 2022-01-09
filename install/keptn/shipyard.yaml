@@ -10,7 +10,7 @@ spec:
         tasks:
         - name: toggle_featureflag
         - name: evaluation
-          triggeredAfter: "2m"
+          triggeredAfter: "5m"
           properties:
                 timeframe: "2m"
       - name: "auto_healing_memory_remediation_failed"
