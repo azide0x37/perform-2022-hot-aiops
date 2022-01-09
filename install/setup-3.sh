@@ -223,4 +223,6 @@ export KEPTN_ENDPOINT=$KEPTN_ENDPOINT
 export KEPTN_BRIDGE_URL=$KEPTN_BRIDGE_URL
 export KEPTN_API_TOKEN=$KEPTN_API_TOKEN
 ###########  Part 4  ##############
+if (( $PROGRESS_CONTROL > 4 )); then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-4.sh
+fi

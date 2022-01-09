@@ -42,8 +42,8 @@ wget -nv -O /tmp/oneagent.sh "$DT_ENV_URL/api/v1/deployment/installer/agent/unix
 sh /tmp/oneagent.sh --set-app-log-content-access=true --set-system-logs-access-enabled=true --set-infra-only=false --set-host-group=easytravel-remediation
 
 ###########  Part 3  ##############
-echo $PROGRESS_CONTROL
-if [ $PROGRESS_CONTROL -gt 3 ]; then
-echo "truedd"
-fi
+
+if (( $PROGRESS_CONTROL > 3 )); then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-3.sh
+fi
+
