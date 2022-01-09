@@ -110,4 +110,6 @@ cd -
 
 
 ###########  Part 8  ##############
+if [ "$PROGRESS_CONTROL" -gt "8" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-8.sh
+fi

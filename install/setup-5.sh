@@ -82,4 +82,6 @@ echo "export variables"
 export AWX_NAMESPACE=$AWX_NAMESPACE
 
 ###########  Part 6  ##############
+if [ "$PROGRESS_CONTROL" -gt "6" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-6.sh
+fi
