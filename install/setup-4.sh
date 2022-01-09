@@ -76,6 +76,6 @@ export gitea_pat=$gitea_pat
 export gitea_domain=$gitea_domain
 
 ###########  Part 5  ##############
-if (( $PROGRESS_CONTROL > 5 )); then
+if [ "$PROGRESS_CONTROL" -gt "5" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-5.sh
 fi
