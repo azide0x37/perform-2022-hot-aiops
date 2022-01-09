@@ -91,4 +91,6 @@ export ingress_domain=$ingress_domain
 export PRIVATE_IP=$PRIVATE_IP
 
 ###########  Part 2  ##############
+if (( $PROGRESS_CONTROL > 2 )); then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-2.sh
+fi
