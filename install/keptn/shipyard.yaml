@@ -11,11 +11,15 @@ spec:
         - name: toggle_featureflag
         - name: evaluation
           triggeredAfter: "2m"
+          properties:
+                timeframe: "2m"
       - name: "auto_healing_memory_remediation_failed"
         triggeredon: auto_healing_memory result = "fail"
         tasks:
         - name: restart
         - name: evaluation
           triggeredAfter: "2m"
+          properties:
+              timeframe: "2m"
 
 

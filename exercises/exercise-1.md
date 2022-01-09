@@ -18,7 +18,6 @@ using the web terminal or a ssh client log into your VM. (Check the provided cre
 
 ## step 2 - Install the first services
 
-
-tte
+2. Run ```./perform-2022-hot-aiops/install/setup-1.sh ```
 
 [Next](./exercise-2.md)

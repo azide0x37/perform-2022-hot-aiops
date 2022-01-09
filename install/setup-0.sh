@@ -37,6 +37,8 @@ echo $DT_ENV_URL
 echo $DT_CLUSTER_TOKEN
 echo $shell_user
 echo $shell_password
+echo "Progress control"
+echo $PROGRESS_CONTROL
 export DT_ENV_URL=$DT_ENV_URL
 export DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN
 export shell_user=$shell_user
