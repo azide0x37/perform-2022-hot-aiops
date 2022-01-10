@@ -21,8 +21,8 @@ spec:
           triggeredAfter: "2m"
           properties:
               timeframe: "2m"
-   - name: "production-disk"
-     sequences:
+    - name: "production-disk"
+      sequences:
       - name: "auto_healing_disk"
         tasks:
         - name: clean_disk
