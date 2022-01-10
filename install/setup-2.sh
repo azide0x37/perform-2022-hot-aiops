@@ -17,7 +17,7 @@ DT_CREATE_ENV_TOKENS=true
 
 echo "Installing k3s"
 #previos v1.18.3+k3s1
-curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.22.5+k3s1 K3S_KUBECONFIG_MODE="644" sh -s - --no-deploy=traefik
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.19.16+k3s1 K3S_KUBECONFIG_MODE="644" sh -s - --no-deploy=traefik
 echo "Waiting 30s for kubernetes nodes to be available..."
 sleep 30
 # Use k3s as we haven't setup kubectl properly yet
