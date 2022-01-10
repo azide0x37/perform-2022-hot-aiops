@@ -20,6 +20,6 @@ sudo chmod +x -R ./perform-2022-hot-aiops/install
 #shell_user => user with root access for the exercises and  configuration
 if [ -z "$PROGRESS_CONTROL" ]; then
 PROGRESS_CONTROL=9
-if 
+fi
 
 sudo PROGRESS_CONTROL=$PROGRESS_CONTROL DT_ENV_URL=$DT_ENV_URL DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN shell_user=$shell_user shell_password=$shell_password ./perform-2022-hot-aiops/install/setup-0.sh
