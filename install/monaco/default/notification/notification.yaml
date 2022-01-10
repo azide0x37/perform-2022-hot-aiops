@@ -1,5 +1,5 @@
 config:
 - KeptnProblemNotification: config.json
 KeptnProblemNotification:
-- name: Keptn Problem Notification
+- name: App problem notification v1
   profile: default/alerting-profile/app.id
