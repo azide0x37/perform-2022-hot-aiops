@@ -21,6 +21,9 @@ using the web terminal or a ssh client log into your VM. (Check the provided cre
 
 ## step 2 - Install the first services
 
-2. Run ```./perform-2022-hot-aiops/install/setup-3.sh ```
+2. From your console run ```/home/$shell_user/perform-2022-hot-aiops/install/setup-3.sh ```.
+ This script will:
+ - Download the Keptn CLI
+ - 
 
 [Next](./exercise-2.md)
