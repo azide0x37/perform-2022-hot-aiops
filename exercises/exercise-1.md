@@ -14,11 +14,13 @@ Services already installed:
 1. Get into the development environment
 using the web terminal or a ssh client log into your VM. (Check the provided credentials on the Dynatrace University).
 
-2. Run ```kubectl get po --all-namespaces ``` to visualize all the pods running in your environment. 
+2. Run ```kubectl get po --all-namespaces ``` to visualize all the default pods running in your environment. 
 
+3. Get into your Dynatrace instance and verify that the one agent is connected
+![deploy](./images/deploy-state.png)
 
 ## step 2 - Install the first services
 
-2. Run ```./perform-2022-hot-aiops/install/setup-1.sh ```
+2. Run ```./perform-2022-hot-aiops/install/setup-3.sh ```
 
 [Next](./exercise-2.md)
