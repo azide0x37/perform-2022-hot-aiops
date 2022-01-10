@@ -68,7 +68,7 @@ chown -R $shell_user:$shell_user /home/$shell_user/.* /home/$shell_user/*
 chmod -R 755 /home/$shell_user/.* /home/$shell_user/*
 runuser -l $shell_user -c 'git config --global user.email $git_email && git config --global user.name $git_user && git config --global http.sslverify false'
 
-echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/$shell_user/.bashrc
+
 
 if [ "$PROGRESS_CONTROL" -gt "9" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-9.sh

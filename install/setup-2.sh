@@ -42,6 +42,9 @@ echo "INSTALLING ONE AGENT"
 wget -nv -O /tmp/oneagent.sh "$DT_ENV_URL/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=$DT_PAAS_TOKEN&arch=x86&flavor=default"
 sh /tmp/oneagent.sh --set-app-log-content-access=true --set-system-logs-access-enabled=true --set-infra-only=false --set-host-group=easytravel-remediation
 
+
+echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/$shell_user/.bashrc
+
 ###########  Part 3  ##############
 
 if [ "$PROGRESS_CONTROL" -gt "3" ]; then
