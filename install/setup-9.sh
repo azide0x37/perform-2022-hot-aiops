@@ -56,11 +56,11 @@ done
     }
   }
 }'
-URL_WEBHOOK="$KEPTN_URL/api/controlPlane/v1/uniform/registration/$UNIFORM_ID/subscription"
+URL_WEBHOOK="$KEPTN_ENDPOINT/controlPlane/v1/uniform/registration/$UNIFORM_ID/subscription"
 
-WEBHOOK_RESPONSE=$(curl -k -s --location --request POST $URL_WEBHOOK \
+WEBHOOK_RESPONSE=$(curl -k --location --request POST $URL_WEBHOOK \
     -H "accept: application/json" \
-    -H "x-token: $KEPTN_TOKEN" \
+    -H "x-token: $KEPTN_API_TOKEN" \
     --data-raw "$pbody")
 echo "response webhook"
 echo "$WEBHOOK_RESPONSE"
