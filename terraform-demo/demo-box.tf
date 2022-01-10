@@ -75,7 +75,7 @@ resource "google_compute_instance" "acebox" {
         "echo ${var.acebox_user}:${var.acebox_password} | sudo chpasswd",
         "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config",
         "sudo service ssh restart",
-        "sudo PROGRESS_CONTROL=9 DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env.id} DT_CLUSTER_TOKEN=${dynatrace_environment.vhot_env.api_token} shell_user=${var.acebox_user} shell_password=${var.acebox_password} /tmp/init.sh"
+        "sudo PROGRESS_CONTROL=${var.tutorial_progress} DT_ENV_URL=${var.dt_cluster_url}/e/${dynatrace_environment.vhot_env.id} DT_CLUSTER_TOKEN=${dynatrace_environment.vhot_env.api_token} shell_user=${var.acebox_user} shell_password=${var.acebox_password} /tmp/init.sh"
       ]
   }
 }

@@ -81,6 +81,7 @@ echo '---
     total_score:
       pass: "90%"
       warning: "75%"' > /home/$shell_user/keptn/easytravel/slo.yaml
+keptn add-resource --project=easytravel --stage=production --resource=/home/$shell_user/perform-2022-hot-aiops/install/keptn/dynatrace.conf.yaml --resourceUri=dynatrace/dynatrace.conf.yaml
 
 keptn add-resource --project=easytravel --resource=/home/$shell_user/keptn/easytravel/sli.yaml --resourceUri=dynatrace/sli.yaml
 keptn configure monitoring dynatrace --project=easytravel

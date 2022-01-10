@@ -43,7 +43,7 @@ metadata:
   name: webhook-configuration
 spec:
   webhooks:
-    - type: sh.keptn.event.action.triggered
+    - type: sh.keptn.event.toggle_featureflag.triggered
       requests:
         - "curl --header 'Authorization: Basic {{.env.secret_awx_token}}'
           --header 'Content-Type: application/json' --request POST --data
@@ -68,3 +68,7 @@ chown -R $shell_user:$shell_user /home/$shell_user/.* /home/$shell_user/*
 chmod -R 755 /home/$shell_user/.* /home/$shell_user/*
 runuser -l $shell_user -c 'git config --global user.email $git_email && git config --global user.name $git_user && git config --global http.sslverify false'
 echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/$shell_user/.bashrc
+
+if [ "$PROGRESS_CONTROL" -gt "9" ]; then
+/home/$shell_user/perform-2022-hot-aiops/install/setup-9.sh
+fi

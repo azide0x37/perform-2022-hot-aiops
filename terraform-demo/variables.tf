@@ -55,6 +55,10 @@ variable "dt_cluster_url" {
 variable "dt_cluster_api_token" {
   description = "Dynatrace cluster API token"
 }
+variable "tutorial_progress" {
+  description = "Dynatrace cluster API token"
+  default = 9
+}
 
 variable "user" {
   description = "Map of lab participants"
