@@ -81,6 +81,8 @@ ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_d
 echo "export variables"
 export AWX_NAMESPACE=$AWX_NAMESPACE
 
+echo "export AWX_NAMESPACE=$AWX_NAMESPACE" >> /home/$shell_user/.bashrc
+
 ###########  Part 6  ##############
 if [ "$PROGRESS_CONTROL" -gt "6" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-6.sh

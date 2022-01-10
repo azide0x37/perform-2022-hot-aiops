@@ -65,13 +65,13 @@ IS_AMAZON=$(curl -o /dev/null -s -w "%{http_code}\n" http://169.254.169.254/late
 if [ $IS_AMAZON -eq 200 ]; then
     echo "This is an Amazon EC2 instance"
     VM_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-    HOSTNAME=$(curl -s http://169.254.169.254/latest/meta-data/hostname)
+    HOSTNAME_VM=$(curl -s http://169.254.169.254/latest/meta-data/hostname)
 else
     IS_GCP=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip)
     if [ $IS_GCP -eq 200 ]; then
         echo "This is a GCP instance"
         VM_IP=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip)
-        HOSTNAME=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/hostname)
+        HOSTNAME_VM=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/hostname)
     fi
 fi
 
@@ -86,9 +86,16 @@ echo "export variables"
 export DT_API_TOKEN=$DT_API_TOKEN
 export DT_PAAS_TOKEN=$DT_PAAS_TOKEN
 export VM_IP=$VM_IP
-export HOSTNAME=$HOSTNAME
+export HOSTNAME_VM=$HOSTNAME_VM
 export ingress_domain=$ingress_domain
 export PRIVATE_IP=$PRIVATE_IP
+
+echo "export DT_API_TOKEN=$DT_API_TOKEN" >> /home/$shell_user/.bashrc
+echo "export DT_PAAS_TOKEN=$DT_PAAS_TOKEN" >> /home/$shell_user/.bashrc
+echo "export VM_IP=$VM_IP" >> /home/$shell_user/.bashrc
+echo "export HOSTNAME_VM=$HOSTNAME_VM" >> /home/$shell_user/.bashrc
+echo "export ingress_domain=$ingress_domain" >> /home/$shell_user/.bashrc
+echo "export PRIVATE_IP=$PRIVATE_IP" >> /home/$shell_user/.bashrc
 
 ###########  Part 2  ##############
 if [ "$PROGRESS_CONTROL" -gt "2" ]; then

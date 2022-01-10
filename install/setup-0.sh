@@ -38,13 +38,18 @@ echo $DT_ENV_URL
 echo $DT_CLUSTER_TOKEN
 echo $shell_user
 echo $shell_password
-echo "Progress control"
 echo $PROGRESS_CONTROL
+
 export DT_ENV_URL=$DT_ENV_URL
 export DT_CLUSTER_TOKEN=$DT_CLUSTER_TOKEN
 export shell_user=$shell_user
 export shell_password=$shell_password
 export PROGRESS_CONTROL=$PROGRESS_CONTROL
+
+echo "export DT_ENV_URL=$DT_ENV_URL" >> /home/$shell_user/.bashrc
+echo "export shell_user=$shell_user" >> /home/$shell_user/.bashrc
+echo "export shell_password=$shell_password" >> /home/$shell_user/.bashrc
+echo "export PROGRESS_CONTROL=$PROGRESS_CONTROL" >> /home/$shell_user/.bashrc
 
 ###########  Part 1  ##############
 if [ "$PROGRESS_CONTROL" -gt "1" ]; then
