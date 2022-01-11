@@ -6,7 +6,7 @@ Today’s IT environments are growing in terms of size and complexity. The speed
 We will be using an application called EasyTravel that provides a web portal which allows users to log in, search for journeys to various destinations, select promotional journeys directly that are offered and to book a journey using credit card details. 
 
 ## The dashboard
-After exercise 3  into dashboard.xx.xx.xx.nip.io where xx.xx.xx is your IP assigned in the Dynatrace University.
+After exercise 3 you can get into dashboard.xx.xx.xx.nip.io (xx.xx.xx is your IP assigned in the Dynatrace University) and visualize all the applications.
 
 ## Remediation overview
 This is the remediation workflow that will be implemented
