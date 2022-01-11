@@ -1,4 +1,4 @@
-# Exercise 1 - Setup environment
+# Exercise 1 - Review & Setup environment
 
 ## step 1 - Review current environment state
 
@@ -21,9 +21,12 @@ using the web terminal or a ssh client log into your VM. (Check the provided cre
 
 ## step 2 - Install the first services
 
-2. From your console run ```/home/$shell_user/perform-2022-hot-aiops/install/setup-3.sh ```.
- This script will:
+1. From your console run ```/home/$shell_user/perform-2022-hot-aiops/install/setup-3.sh ```.
+ This script will execute the following:
  - Download the Keptn CLI
- - 
+ - Install keptn in the Kubernetes cluster using helm
+ - Install the ingress-nginx for service connectivity
+ - Install the dynatrace-service for keptn
+ - Configure the default keptn project
 
 [Next](./exercise-2.md)

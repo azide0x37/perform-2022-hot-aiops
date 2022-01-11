@@ -6,7 +6,7 @@ Today’s IT environments are growing in terms of size and complexity. The speed
 We will be using an application called EasyTravel that provides a web portal which allows users to log in, search for journeys to various destinations, select promotional journeys directly that are offered and to book a journey using credit card details. 
 
 ## The dashboard
-You can navigate into dashboard.xx.xx.xx.nip.io where xx.xx.xx is your IP assigned in the Dynatrace University.
+After exercise 3  into dashboard.xx.xx.xx.nip.io where xx.xx.xx is your IP assigned in the Dynatrace University.
 
 ## Remediation overview
 This is the remediation workflow that will be implemented
@@ -14,6 +14,13 @@ This is the remediation workflow that will be implemented
 
 
 ## Exercises
+To fully understand the remediation process behind the scenes we will execute a serie of exercises to build and configure the environment from zero.
+
 1. [Exercise 1](exercises/exercise-1.md)
-2. [Exercise 2 ](exercises/exercise-2.md)
+2. [Exercise 2](exercises/exercise-2.md)
 3. [Exercise 3](exercises/exercise-3.md)   
+4. [Exercise 4](exercises/exercise-4.md)
+5. [Exercise 5](exercises/exercise-5.md)  
+6. [Exercise 6](exercises/exercise-6.md)
+7. [Exercise 7](exercises/exercise-7.md)
+8. [Exercise 8](exercises/exercise-8.md)

@@ -51,6 +51,16 @@ echo "export shell_user=$shell_user" >> /home/$shell_user/.bashrc
 echo "export shell_password=$shell_password" >> /home/$shell_user/.bashrc
 echo "export PROGRESS_CONTROL=$PROGRESS_CONTROL" >> /home/$shell_user/.bashrc
 
+###################################
+#  Set user and file permissions  #
+###################################
+
+echo "Configuring environment for user $shell_user"
+chown -R $shell_user:$shell_user /home/$shell_user/.* /home/$shell_user/*
+chmod -R 755 /home/$shell_user/.* /home/$shell_user/*
+runuser -l $shell_user -c 'git config --global user.email $git_email && git config --global user.name $git_user && git config --global http.sslverify false'
+
+
 ###########  Part 1  ##############
 if [ "$PROGRESS_CONTROL" -gt "1" ]; then
     /home/$shell_user/perform-2022-hot-aiops/install/setup-1.sh
