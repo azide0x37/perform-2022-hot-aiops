@@ -1,0 +1,8 @@
+config:
+- Default: Default.json
+- app: app.json
+Default:
+- name: Default
+app:
+- name: app
+  mz: /default/management-zone/app.id

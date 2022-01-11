@@ -1,0 +1,65 @@
+---
+- hosts: easyTravel
+  become: yes
+
+  tasks:
+
+  - name: 'push comment to dynatrace'
+    uri:
+      url: "{{ dynatrace_environment_url }}{{ dt_comments_api }}{{ dt_pid }}/comments"
+      method: POST
+      validate_certs: no
+      use_proxy: no
+      headers:
+        Content-Type: "application/json"
+        Authorization: "Api-token {{ dynatrace_api_token }}"
+      body:
+        comment: 'Ansible Play Started ({{ tower_job_id | default("0") }}): {{ awx_template_name }} - Remediation started -- [Ansible Job]({{ awx_dns_name }}/#/jobs/playbook/{{ tower_job_id | default("0") }})'
+        user: '{{ dt_comment_user }}'
+        context: '{{ dt_comment_context }}'
+      body_format: json
+
+  - name: restart easyTravel service
+    service:
+      name: easytravel
+      state: restarted
+
+  - name: 'Ensure easytravel service is in started state'
+    service:
+      name: easytravel
+      state: started
+    register: easytravelserviceresponse
+
+  - name: set remediation status
+    set_fact:
+      remediation_status: succeeded
+      remediation_result: pass
+    when: easytravelserviceresponse.state|default("") == "started"
+
+  - name: push sh.keptn.event.toggle_featureflag.finished event
+    uri:
+      url: "{{ keptn_url }}{{ keptn_events_api }}"
+      method: POST
+      validate_certs: no
+      use_proxy: no
+      headers:
+        Content-Type: "application/cloudevents+json"
+        x-token: "{{ keptn_api_token }}"
+      body:
+        specversion: '1.0'
+        source: AWX
+        type: sh.keptn.event.toggle_featureflag.finished
+        datacontenttype: application/json
+        data:
+          project: "{{ keptn_project }}"
+          stage: "{{ keptn_stage }}"
+          service: "{{ keptn_service }}"
+          status: "{{ remediation_status|default('errored') }}"
+          result: "{{ remediation_result|default('fail') }}"
+          message: ansible remediation completed
+          action:
+            status: "{{ remediation_status|default('errored') }}"
+            result: "{{ remediation_result|default('fail') }}"
+        triggeredid: "{{ event_id }}"
+        shkeptncontext: "{{ sh_keptn_context }}"
+      body_format: json

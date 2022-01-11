@@ -1,0 +1,8 @@
+gcloud_project  = ""
+gcloud_zone     = "us-east4-a"
+gcloud_cred_file = ""
+name_prefix = "remediation"
+private_ssh_key = ""
+dt_cluster_url =""
+dt_cluster_api_token = ""
+tutorial_progress = 3

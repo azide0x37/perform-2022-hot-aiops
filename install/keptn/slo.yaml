@@ -1,0 +1,11 @@
+spec_version: '0.1.0'
+comparison:
+  compare_with: "single_result"
+  include_result_with_score: "pass"
+  aggregate_function: avg
+objectives:
+  - sli: suspension_time
+  - sli: garbage_collection
+total_score:
+  pass: "90%"
+  warning: "75%"

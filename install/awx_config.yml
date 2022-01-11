@@ -1,0 +1,496 @@
+---
+- hosts: localhost
+  become: no
+
+  tasks:
+
+  - name: AWX - Wait for API ({{ awx_url }}/api/v2/ping) to be up
+    uri:
+      url: "{{ awx_url }}/api/v2/ping"
+      status_code: 200
+      validate_certs: no
+    register: result
+    until: result.status == 200
+    retries: 60
+    delay: 10
+
+  - name: AWX - Retrieve admin password
+    shell: kubectl -n awx get secret awx-aiops-admin-password -o jsonpath='{.data.password}' | base64 -d
+    register: awx_admin_password_raw
+
+  - set_fact:
+      awx_admin_password: "{{ awx_admin_password_raw.stdout }}"
+
+  - name: AWX - Retrieve Gitea URL
+    set_fact:
+      gitea_url: "http://gitea.{{ ingress_domain }}"
+
+  - name: AWX - Retrieve Gitea org
+    set_fact:
+      gitea_org: "perform"
+    tags:
+      - always
+
+  - name: AWX - Retrieve Gitea repo
+    set_fact:
+      gitea_repo: "auto-remediation"
+
+  - name: AWX - Retrieve Gitea credentials
+    shell: kubectl -n gitea get secret gitea-admin -o jsonpath='{.data.git_user}' | base64 -d
+    register: git_user_raw
+
+  - set_fact:
+      git_user: "{{ git_user_raw.stdout }}"
+
+  - shell: kubectl -n gitea get secret gitea-admin -o jsonpath='{.data.git_password}' | base64 -d
+    register: git_password_raw
+
+  - set_fact:
+      git_password: "{{ git_password_raw.stdout }}"
+
+  - set_fact:
+      awx_credential_type_name_dt: "Dynatrace API Token"
+
+  - set_fact:
+      awx_credential_name_dt: "{{ dt_environment_url }} API Token"
+
+  - name: Create Dynatrace API token credential type
+    uri:
+      url: "{{ awx_url }}/api/v2/credential_types/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: "{{ awx_credential_type_name_dt }}"
+        description: ''
+        kind: cloud
+        namespace:
+        managed_by_tower: false
+        inputs: 
+          fields:
+          - id: dt_api_token
+            type: string
+            label: Dynatrace API Token
+            secret: true
+          required:
+          - dt_api_token
+        injectors:
+          extra_vars:
+            dynatrace_api_token: "{{ '{{' }} dt_api_token {{ '}}' }}"
+      body_format: json
+    register: credential_type_result
+    until: credential_type_result.status == 200 or credential_type_result.status == 201 or credential_type_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: Create keptn API token credential type
+    uri:
+      url: "{{ awx_url }}/api/v2/credential_types/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: "Keptn API Token"
+        description: ''
+        kind: cloud
+        namespace:
+        managed_by_tower: false
+        inputs: 
+          fields:
+          - id: keptn_api_token
+            type: string
+            label: Keptn API Token
+            secret: true
+          required:
+          - keptn_api_token
+        injectors:
+          extra_vars:
+            keptn_api_token: "{{ '{{' }} keptn_api_token {{ '}}' }}"
+      body_format: json
+    register: keptn_credential_type_result
+    until: keptn_credential_type_result.status == 200 or keptn_credential_type_result.status == 201 or keptn_credential_type_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: Create Dynatrace API token credential
+    uri:
+      url: "{{ awx_url }}/api/v2/credentials/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: "{{ awx_credential_name_dt }}"
+        kind: cloud
+        organization: 1
+        credential_type: "{{ credential_type_result.json.id }}"
+        inputs:
+          dt_api_token: "{{ dynatrace_api_token }}"
+      body_format: json
+    register: dt_credential_result
+    until: dt_credential_result.status == 200 or dt_credential_result.status == 201 or dt_credential_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: Create Keptn API token credential
+    uri:
+      url: "{{ awx_url }}/api/v2/credentials/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: "Keptn API Token"
+        kind: cloud
+        organization: 1
+        credential_type: "{{ keptn_credential_type_result.json.id }}"
+        inputs:
+          keptn_api_token: "{{ keptn_api_token }}"
+      body_format: json
+    register: keptn_credential_result
+    until: keptn_credential_result.status == 200 or keptn_credential_result.status == 201 or keptn_credential_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: create easyTravel machine credential
+    uri:
+      url: "{{ awx_url }}/api/v2/credentials/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: easyTravel SSH creds
+        credential_type: 1
+        kind: ssh
+        organization: 1
+        inputs:
+          username: "{{ shell_user }}"
+          password: "{{ shell_password }}"
+          become_method: sudo
+          become_password: "{{ shell_password }}"
+      body_format: json
+    register: easytravel_credential_result
+
+  - set_fact:
+      gitea_credential_type_name: "Source Control"
+
+  - set_fact:
+      gitea_credential_name: "{{ custom_domain_protocol }}://gitea.{{ ingress_domain }} Credentials"
+
+  - name: AWX - Get SCM credential type
+    uri:
+      url: "{{ awx_url }}/api/v2/credential_types/?name={{ gitea_credential_type_name | urlencode() }}"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: GET
+      status_code: [200]
+      headers:
+        Content-Type: "application/json"
+    register: gitea_credential_type_result
+
+  - name: AWX - Create Gitea token credential
+    when: gitea_credential_type_result.json.count == 1
+    uri:
+      url: "{{ awx_url }}/api/v2/credentials/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: "{{ gitea_credential_name }}"
+        kind: scm
+        organization: 1
+        credential_type: "{{ gitea_credential_type_result.json.results[0].id }}"
+        inputs:
+          password: "{{ git_password }}"
+          username: "{{ git_user }}"
+      body_format: json
+    register: gitea_credential_result
+    until: gitea_credential_result.status == 200 or gitea_credential_result.status == 201 or gitea_credential_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: Create remediation project
+    uri:
+      url: "{{ awx_url }}/api/v2/projects/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: self-healing
+        description: ''
+        scm_type: git
+        scm_url: "{{ gitea_url }}/{{ gitea_org }}/{{ gitea_repo }}"
+        scm_branch: master
+        scm_clean: true
+        scm_delete_on_update: false
+        credential: "{{ gitea_credential_result.json.id }}"
+        timeout: 0
+        organization: 1
+        scm_update_on_launch: true
+        scm_update_cache_timeout: 10
+      body_format: json
+    register: project_result
+    until: project_result.status == 200 or project_result.status == 201 or project_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: Wait for project to be on successful state
+    uri:
+      url: "{{ awx_url }}/api/v2/projects/{{ project_result.json.id }}"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: GET
+      status_code: [200, 201, 204]
+      headers:
+        Content-Type: "application/json"
+    register: project_object
+    until: project_object.json.status == "successful"
+    retries: 10
+    delay: 2
+    ignore_errors: yes
+
+  - name: Retrigger project on fail
+    uri:
+      url: "{{ awx_url }}/api/v2/projects/{{ project_result.json.id }}/update/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 202, 204]
+    register: project_retrigger_result
+
+  - name: Wait for project to be on successful state
+    uri:
+      url: "{{ awx_url }}/api/v2/projects/{{ project_result.json.id }}"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: GET
+      status_code: [200, 201, 204]
+      headers:
+        Content-Type: "application/json"
+    register: project_object
+    until: project_object.json.status == "successful"
+    retries: 5
+    delay: 2
+
+  - name: Create remediation inventory
+    uri:
+      url: "{{ awx_url }}/api/v2/inventories/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      return_content: yes
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: inventory
+        description: ''
+        organization: 1
+        variables: |
+          ---
+          dynatrace_environment_url: {{ dt_environment_url }}
+          dt_comments_api: /api/v1/problem/details/
+          dt_events_api: /api/v1/events
+          dt_infrastructure_api: /api/v1/entity/infrastructure/
+          dt_metrics_api: /api/v2/metrics/ 
+          dt_comment_user: 'ansible'
+          dt_comment_context: 'ansible AWX'
+          awx_dns_name: {{ awx_url }}
+          gitea_url: "http://gitea.{{ ingress_domain }}"
+          et_rest_url: "http://rest.{{ ingress_domain }}"
+          keptn_url: "http://keptn.{{ ingress_domain }}"
+          keptn_events_api: /api/v1/event
+          awx_template_name: remediation
+      body_format: json
+    register: inventory_result
+    until: inventory_result.status == 200 or inventory_result.status == 201 or inventory_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: create easyTravel host for inventory
+    uri:
+      url: "{{ awx_url }}/api/v2/inventories/{{ inventory_result.json.id }}/hosts/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      return_content: yes
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: easyTravel
+        enabled: true
+        description: ''
+        variables: |
+          ---
+          ansible_host: {{ ansible_default_ipv4.address }}
+      body_format: json
+
+  - name: Create remediation template
+    uri:
+      url: "{{ awx_url }}/api/v2/job_templates/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      return_content: yes
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: 'remediation'
+        job_type: run
+        inventory: "{{ inventory_result.json.id }}"
+        project: "{{ project_result.json.id }}"
+        playbook: playbooks/remediation.yaml
+        verbosity: 0
+        ask_variables_on_launch: true
+      body_format: json
+    register: remediation_template_result
+    until: remediation_template_result.status == 200 or remediation_template_result.status == 201 or remediation_template_result.status == 204
+    retries: 10
+    delay: 5
+
+  - set_fact:
+      remediation_template_url: "{{ awx_url }}/api/v2/job_templates/{{ remediation_template_result.json.id }}/launch/"
+
+  - name: create template for problem trigger
+    uri:
+      url: "{{ awx_url }}/api/v2/job_templates/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      return_content: yes
+      headers:
+        Content-Type: "application/json"
+      body:
+        name: 'Trigger Memory Leak on Backend'
+        job_type: run
+        inventory: "{{ inventory_result.json.id }}"
+        project: "{{ project_result.json.id }}"
+        playbook: playbooks/trigger_problem.yml
+        verbosity: 0
+        ask_variables_on_launch: false
+        extra_vars: |
+          ---
+      body_format: json
+    register: trigger_problem_template_result
+
+  - name: Assign Dynatrace API Token credential to remediation template
+    uri:
+      url: "{{ awx_url }}/api/v2/job_templates/{{ item }}/credentials/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      return_content: yes
+      headers:
+        Content-Type: "application/json"
+      body:
+        '{ "id" : {{ dt_credential_result.json.id | int }} }'
+      body_format: json
+    with_items:
+      - "{{ remediation_template_result.json.id }}"
+    register: assign_dt_token_result
+    until: assign_dt_token_result.status == 200 or assign_dt_token_result.status == 201 or assign_dt_token_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: Assign Keptn API Token credential to remediation template
+    uri:
+      url: "{{ awx_url }}/api/v2/job_templates/{{ item }}/credentials/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      return_content: yes
+      headers:
+        Content-Type: "application/json"
+      body:
+        '{ "id" : {{ keptn_credential_result.json.id | int }} }'
+      body_format: json
+    with_items:
+      - "{{ remediation_template_result.json.id }}"
+    register: assign_keptn_token_result
+    until: assign_keptn_token_result.status == 200 or assign_keptn_token_result.status == 201 or assign_keptn_token_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: assign easyTravel ssh cred to remediation template
+    uri:
+      url: "{{ awx_url }}/api/v2/job_templates/{{ item }}/credentials/"
+      user: "{{ awx_admin_username }}"
+      password: "{{ awx_admin_password }}"
+      force_basic_auth: yes
+      validate_certs: false
+      method: POST
+      status_code: [200, 201, 204]
+      return_content: yes
+      headers:
+        Content-Type: "application/json"
+      body:
+        '{ "id" : {{ easytravel_credential_result.json.id | int }} }'
+      body_format: json
+    with_items:
+      - "{{ remediation_template_result.json.id }}"
+    register: assign_et_cred_result
+    until: assign_et_cred_result.status == 200 or assign_et_cred_result.status == 201 or assign_et_cred_result.status == 204
+    retries: 10
+    delay: 1
+
+  - name: print remediation template url
+    debug:
+      msg: "Ansible has been configured successfully! Copy the following URL to set it as the endpoint on the webhook service config: {{ remediation_template_url }}"
