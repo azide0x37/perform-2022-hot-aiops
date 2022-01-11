@@ -22,5 +22,3 @@ To fully understand the remediation process behind the scenes we will execute a 
 4. [Exercise 4](exercises/exercise-4.md)
 5. [Exercise 5](exercises/exercise-5.md)  
 6. [Exercise 6](exercises/exercise-6.md)
-7. [Exercise 7](exercises/exercise-7.md)
-8. [Exercise 8](exercises/exercise-8.md)
