@@ -1,11 +1,4 @@
-# Exercise 6 - Configure the webhook
+# Exercise 6 - Assemble and test the new remediation workflow
 
-
-Follow the UI steps or run the automatic approach 
-
-/home/$shell_user/perform-2022-hot-aiops/install/setup-9.sh
-
-
-
-# Evaluation 
+Using AWX trigger the problem and wait for the process to execute.
 

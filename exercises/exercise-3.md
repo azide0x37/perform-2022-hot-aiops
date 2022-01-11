@@ -17,9 +17,13 @@ Select the webhook menu from the left bar
 Select the webhook service and add a subscription
 ![webhook](./images/webhook-service.png)
 
-5. Fill the form with the values from step 2
+5. Fill the form with the values from step 2. 
 ![webhook-content](./images/webhook-content.png)
 
-4.(Temporal) Fix the webhook file. 
+4. (Temporal) Fix the webhook file. 
+There is a bug in the webhook service in Keptn, so we need to fix the way the Custom payload of the service is store. In order to do it, navigate to Gitea and locate the `webhook/webhook.yaml` file inside `easytravel` repo.
+
+Replace the body in the file with the body from the step 1. (Note: The original content has /// triple scape characters, the replace content fixes this issue)
+![webhook-body](./images/webhook-body.png)
 
 [Next](./exercise-4.md)
