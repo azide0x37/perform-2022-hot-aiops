@@ -76,7 +76,7 @@ echo "export AWX_NAMESPACE=$AWX_NAMESPACE" >> /home/$shell_user/.bashrc
 
 echo "#############################################################################################################"
 echo "#############################################################################################################"
-echo "Navigate to AWX http://awx.$ingress_domain, login with user $login_user and password  $login_password"
+echo "Navigate to AWX http://awx.$ingress_domain, login with user $login_user and password  $login_password . It can take a few mins to be available"
 echo "#############################################################################################################"
 echo "#############################################################################################################"
 
