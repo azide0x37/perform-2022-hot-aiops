@@ -74,6 +74,12 @@ export AWX_NAMESPACE=$AWX_NAMESPACE
 
 echo "export AWX_NAMESPACE=$AWX_NAMESPACE" >> /home/$shell_user/.bashrc
 
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+echo "Navigate to AWX http://awx.$ingress_domain, login with user $login_user and password  $login_password"
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+
 ###########  Part 6  ##############
 if [ "$PROGRESS_CONTROL" -gt "6" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-6.sh

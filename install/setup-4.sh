@@ -78,6 +78,13 @@ export gitea_domain=$gitea_domain
 echo "export gitea_pat=$gitea_pat" >> /home/$shell_user/.bashrc
 echo "export gitea_domain=$gitea_domain" >> /home/$shell_user/.bashrc
 
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+echo "Navigate to $gitea_domain, login with user $git_user and password  $git_password"
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+
+
 ###########  Part 5  ##############
 if [ "$PROGRESS_CONTROL" -gt "5" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-5.sh

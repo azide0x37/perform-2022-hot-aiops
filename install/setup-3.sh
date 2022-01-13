@@ -231,6 +231,12 @@ echo "export KEPTN_ENDPOINT=$KEPTN_ENDPOINT" >> /home/$shell_user/.bashrc
 echo "export KEPTN_BRIDGE_URL=$KEPTN_BRIDGE_URL" >> /home/$shell_user/.bashrc
 echo "export KEPTN_API_TOKEN=$KEPTN_API_TOKEN" >> /home/$shell_user/.bashrc
 
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+echo "Navigate to $KEPTN_BRIDGE_URL, login with user $login_user and password  $login_password"
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+
 ###########  Part 4  ##############
 if [ "$PROGRESS_CONTROL" -gt "4" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-4.sh

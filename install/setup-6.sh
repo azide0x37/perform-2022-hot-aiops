@@ -82,6 +82,11 @@ helm upgrade -i ace-dashboard /tmp/dashboard-helm-chart --namespace dashboard --
   --set env.KEPTN_BRIDGE_PASSWORD=$login_password --set env.DT_TENANT_URL=$DT_ENV_URL --set authb64encoded=$authb64encoded \
   --set env.SIMPLENODEAPP_URL_STAGING=http://angular.$ingress_domain --set env.SIMPLENODEAPP_URL_PRODUCTION=http://classic.$ingress_domain 
 
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+echo "Navigate to EasyTravel http://angular.$ingress_domain and http://classic.$ingress_domain"
+echo "#############################################################################################################"
+echo "#############################################################################################################"
 
 ###########  Part 7  ##############
 if [ "$PROGRESS_CONTROL" -gt "7" ]; then

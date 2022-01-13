@@ -29,4 +29,6 @@ using the web terminal or a ssh client log into your VM. (Check the provided cre
  - Install the dynatrace-service for keptn
  - Configure the default keptn project
 
+After the installation you should be able to navigate to 
+
 [Next](./exercise-2.md)
