@@ -80,7 +80,7 @@ echo "export gitea_domain=$gitea_domain" >> /home/$shell_user/.bashrc
 
 echo "#############################################################################################################"
 echo "#############################################################################################################"
-echo "Navigate to $gitea_domain, login with user $git_user and password  $git_password"
+echo "Navigate to http://$gitea_domain, login with user $git_user and password $git_password"
 echo "#############################################################################################################"
 echo "#############################################################################################################"
 source ~/.bashrc
