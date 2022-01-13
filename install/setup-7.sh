@@ -63,7 +63,7 @@ demo:
 EOF
 ) | tee /home/$shell_user/perform-2022-hot-aiops/install/monaco/env.yaml
 cd /home/$shell_user/perform-2022-hot-aiops/install/monaco
-sed -i -e "s|KEPTN_API_TOKEN|$KEPTN_API_TOKEN|"  -e "s|KEPTN_ENDPOINT|$KEPTN_ENDPOINT/v1/event|" ./default/notification/config.json
+sed -i -e "s|KEPTN_API_TOKEN|$KEPTN_API_TOKEN|"  -e "s|KEPTN_ENDPOINT|$KEPTN_ENDPOINT/v1/event|" /home/$shell_user/perform-2022-hot-aiops/install/monaco/default/notification/config.json
 ./monaco deploy -e=./env.yaml -p=default .
 cd -
 
