@@ -84,7 +84,7 @@ helm upgrade -i ace-dashboard /tmp/dashboard-helm-chart --namespace dashboard --
 
 echo "#############################################################################################################"
 echo "#############################################################################################################"
-echo "Navigate to EasyTravel http://angular.$ingress_domain and http://classic.$ingress_domain"
+echo "Navigate to Dashboard http://dashboard.$ingress_domain with user $login_user and password $login_password"
 echo "#############################################################################################################"
 echo "#############################################################################################################"
 
