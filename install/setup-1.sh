@@ -97,6 +97,9 @@ echo "export HOSTNAME_VM=$HOSTNAME_VM" >> /home/$shell_user/.bashrc
 echo "export ingress_domain=$ingress_domain" >> /home/$shell_user/.bashrc
 echo "export PRIVATE_IP=$PRIVATE_IP" >> /home/$shell_user/.bashrc
 
+echo "export ingress_domain=$ingress_domain" >> /etc/profile
+
+
 ###########  Part 2  ##############
 if [ "$PROGRESS_CONTROL" -gt "2" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-2.sh

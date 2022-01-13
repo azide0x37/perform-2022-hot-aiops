@@ -7,5 +7,5 @@ Add a new remedation webhook and a new quality gate evaluation to measure the qu
 
 Using AWX trigger the problem and wait for the process to execute.
 
-You can use [https://webhook.site/](https://webhook.site/) to receive the webhook request and curl or postman to send the remedation end event
+You can use [https://webhook.site/](https://webhook.site/) to receive the webhook request and curl or postman to send the remediation end event
 
