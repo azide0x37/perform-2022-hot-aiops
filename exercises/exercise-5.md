@@ -1,5 +1,5 @@
 # Exercise 5 - Development workflow
-The goal for this second part of the lab is to learn how to develop new remediation workflows by testing each part of the process and then assembling everything into a single workflow.
+The goal for this second part of the lab is to learn how to develop new remediation workflows by ***testing each part of the process independently*** and then assembling everything into a single workflow.
 
 ## Step 1 - Identify the components
 
