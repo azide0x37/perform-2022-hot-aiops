@@ -21,7 +21,7 @@ using the web terminal or a ssh client log into your VM. (Check the provided cre
 
 ## step 2 - Install the first services
 
-1. From your console run ```sudo /home/$shell_user/perform-2022-hot-aiops/install/setup-3.sh```.
+1. From your console run ```sudo -E bash /home/$shell_user/perform-2022-hot-aiops/install/setup-3.sh```.
  This script will execute the following:
  - Download the Keptn CLI
  - Install keptn in the Kubernetes cluster using helm
