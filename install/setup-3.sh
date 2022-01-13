@@ -6,6 +6,7 @@ echo "############### SETUP 3 - KEPTN ###########################"
 
 echo $ingress_domain
 echo $PRIVATE_IP
+echo $PROGRESS_CONTROL
 #########################################
 #  VARIABLES                            #
 #########################################
