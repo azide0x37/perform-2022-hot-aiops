@@ -5,12 +5,12 @@ The goal for this second part of the lab is to learn how to develop new remediat
 
 The solution has the following components:
 
-- Dynatrace problem detection
-- Keptn remediation workflow
-- Keptn webhook service
-- Remediation script/service 
-- Quality gate evaluation
-- Escalation script/service
+1. Dynatrace problem detection
+1. Keptn remediation workflow
+1. Keptn webhook service
+1. Remediation script/service 
+1. Quality gate evaluation
+1. Escalation script/service
 
 In order to be able to develop and iterate multiple times we need a way to test each component isolated from the rest of the architecture. 
 
@@ -28,8 +28,10 @@ i.e.
 
 ### Keptn remediation workflow
 Instead of waiting for a problem to be detected by Dynatrace to test your integration you can use the keptn API to send fake problem events to test your workflow.
-
-i.e. 
+i.e.
+```(bash)
+/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh "Critical Performance Issue" PERFORMANCE_EVENT
+```
 
 ### Keptn webhook service
 

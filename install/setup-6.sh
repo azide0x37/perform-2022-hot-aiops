@@ -87,7 +87,7 @@ echo "##########################################################################
 echo "Navigate to Dashboard http://dashboard.$ingress_domain with user $login_user and password $login_password"
 echo "#############################################################################################################"
 echo "#############################################################################################################"
-
+source ~/.bashrc
 ###########  Part 7  ##############
 if [ "$PROGRESS_CONTROL" -gt "7" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-7.sh

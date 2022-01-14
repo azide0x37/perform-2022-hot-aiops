@@ -6,7 +6,7 @@ echo "############### SETUP 7 - Lab Setup ###########################"
 #########################################
 #  VARIABLES                            #
 #########################################
-source ~/.bashrc
+
 echo "Starting installation"
 keptn_version=0.11.4
 domain="nip.io"
