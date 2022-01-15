@@ -36,6 +36,6 @@ sudo -E bash /home/$shell_user/perform-2022-hot-aiops/install/setup-3.sh
  - Install the dynatrace-service for keptn
  - Configure the default keptn project
 
-After the installation you should be able to navigate to 
+ After the installation you should be able to navigate to the keptn bridge. (Check the console for more info).
 ---
 [Next exercise](./exercise-2.md)
