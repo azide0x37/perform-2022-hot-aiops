@@ -73,8 +73,8 @@ ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_d
 echo "export variables"
 export AWX_NAMESPACE=$AWX_NAMESPACE
 echo "export AWX_NAMESPACE=$AWX_NAMESPACE" >> /home/$shell_user/.bashrc
-##Fix ansible ownershipt
-chown $shell_user -r /home/$shell_user/.ansible
+##Fix ansible ownersh
+chown $shell_user -R /home/$shell_user/.ansible
 
 echo "#############################################################################################################"
 echo "#############################################################################################################"
