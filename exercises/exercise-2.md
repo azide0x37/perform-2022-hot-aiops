@@ -16,7 +16,8 @@
     - Configure AWX to have a interface to manage Ansible.
     - Run an Ansible playbook to configure Ansible itself and add a remediation and a trigger memory-leak playbook.
 
-1. From your console run  
+1.  Execute ```source ~/.bashrc``` to refresh your bash command before executing the next command.
+    From your console run  
     ```(bash)
     sudo -E bash /home/$shell_user/perform-2022-hot-aiops/install/setup-6.sh 
     ```
