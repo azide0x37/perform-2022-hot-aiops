@@ -13,8 +13,8 @@ apt-get --qq -f install
 sudo apt install git -y
 echo "###################################################################################################################"
 echo "############################# CLONING REPO ########################################################################"
-git clone -q https://github.com/dynatrace-ace/perform-2022-hot-aiops.git
-sudo chmod +x -R ./perform-2022-hot-aiops/install
+git clone -q -b v1.1 --single-branch https://github.com/dynatrace-ace/perform-2022-hot-aiops.git
+sudo chmod +x -R ./perform-2022-hot-aiops
 #DT_CLUSTER_TOKEN => token with permission to generate other tokens in dynatrace environment
 #DT_ENV_URL => URL for the current dynatrace environment
 #shell_user => user with root access for the exercises and  configuration

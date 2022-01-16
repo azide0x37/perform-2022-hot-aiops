@@ -82,7 +82,12 @@ helm upgrade -i ace-dashboard /tmp/dashboard-helm-chart --namespace dashboard --
   --set env.KEPTN_BRIDGE_PASSWORD=$login_password --set env.DT_TENANT_URL=$DT_ENV_URL --set authb64encoded=$authb64encoded \
   --set env.SIMPLENODEAPP_URL_STAGING=http://angular.$ingress_domain --set env.SIMPLENODEAPP_URL_PRODUCTION=http://classic.$ingress_domain 
 
-
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+echo "Navigate to Dashboard http://dashboard.$ingress_domain with user $login_user and password $login_password"
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+source ~/.bashrc
 ###########  Part 7  ##############
 if [ "$PROGRESS_CONTROL" -gt "7" ]; then
 /home/$shell_user/perform-2022-hot-aiops/install/setup-7.sh

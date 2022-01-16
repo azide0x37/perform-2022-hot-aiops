@@ -6,6 +6,7 @@ echo "############### SETUP 7 - Lab Setup ###########################"
 #########################################
 #  VARIABLES                            #
 #########################################
+
 echo "Starting installation"
 keptn_version=0.11.4
 domain="nip.io"
@@ -62,11 +63,42 @@ demo:
     - env-token-name: "DYNATRACE_TOKEN"
 EOF
 ) | tee /home/$shell_user/perform-2022-hot-aiops/install/monaco/env.yaml
+
 cd /home/$shell_user/perform-2022-hot-aiops/install/monaco
-sed -i -e "s|KEPTN_API_TOKEN|$KEPTN_API_TOKEN|"  -e "s|KEPTN_ENDPOINT|$KEPTN_ENDPOINT/v1/event|" ./default/notification/config.json
+echo "generating event " 
+(
+ cat <<EOF
+        {
+        "acceptAnyCertificate": true,
+        "active": true,
+        "alertingProfile": "{{.profile}}",
+        "headers": [
+        {
+        "name": "x-token",
+        "value": "$KEPTN_API_TOKEN"
+        },
+        {
+        "name": "Content-Type",
+        "value": "application/cloudevents+json"
+        }
+        ],
+        "name": "{{.name}}",
+        "notifyEventMergesEnabled": false,
+        "payload": "        {\n            \"specversion\":\"1.0\",\n            \"source\":\"dynatrace\",\n            \"id\":\"{PID}\",\n            \"time\":\"\",\n            \"contenttype\":\"application/json\",\n            \"type\": \"sh.keptn.event.production.auto_healing_memory.triggered\",\n            \"data\": {\n                \"State\":\"{State}\",\n                \"ProblemID\":\"{ProblemID}\",\n                \"PID\":\"{PID}\",\n                \"ProblemTitle\":\"{ProblemTitle}\",\n                \"ProblemURL\":\"{ProblemURL}\",\n                \"ProblemDetails\":{ProblemDetailsJSON},\n                \"Tags\":\"{Tags}\",\n                \"ImpactedEntities\":{ImpactedEntities},\n                \"ImpactedEntity\":\"{ImpactedEntity}\",\n                \"project\":\"easytravel\",\n                \"stage\":\"production\",\n                \"service\":\"allproblems\"\n            }\n        }",
+        "type": "WEBHOOK",
+        "url": "$KEPTN_ENDPOINT/v1/event"
+        }
+EOF
+) | tee /home/$shell_user/perform-2022-hot-aiops/install/monaco/default/notification/config.json
+#sed -i -e "s|KEPTN_API_TOKEN|$KEPTN_API_TOKEN|"  -e "s|KEPTN_ENDPOINT|$KEPTN_ENDPOINT/v1/event|" /home/$shell_user/perform-2022-hot-aiops/install/monaco/default/notification/config.json
 ./monaco deploy -e=./env.yaml -p=default .
 cd -
 
+echo "#############################################################################################################"
+echo "#############################################################################################################"
+echo "Check the new repo in gitea, and configurations in Dynatrace"
+echo "#############################################################################################################"
+echo "#############################################################################################################"
 
 ###########  Part 8  ##############
 if [ "$PROGRESS_CONTROL" -gt "8" ]; then

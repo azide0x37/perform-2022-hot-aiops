@@ -1,16 +1,16 @@
 # Exercise 5 - Development workflow
-The goal for this second part of the lab is to learn how to develop new remediation workflows by testing each part of the process and then assembling everything into a single workflow.
+The goal for this second part of the lab is to learn how to develop new remediation workflows by ***testing each part of the process independently*** and then assembling everything into a single workflow.
 
 ## Step 1 - Identify the components
 
 The solution has the following components:
 
-- Dynatrace problem detection
-- Keptn remediation workflow
-- Keptn webhook service
-- Remediation script/service 
-- Quality gate evaluation
-- Escalation script/service
+1. Dynatrace problem detection
+1. Keptn remediation workflow
+1. Keptn webhook service
+1. Remediation script/service 
+1. Quality gate evaluation
+1. Escalation script/service
 
 In order to be able to develop and iterate multiple times we need a way to test each component isolated from the rest of the architecture. 
 
@@ -19,10 +19,19 @@ This is probably the most difficult component to test since it would require an 
 
 You can also develop your own test application based on techical articles depending on the programming language and the type of problem to simulate i.e. (https://michaelscodingspot.com/ways-to-cause-memory-leaks-in-dotnet/)
 
+Another option would be to use Dynatrace API to send a custom alert https://www.dynatrace.com/support/help/how-to-use-dynatrace/problem-detection-and-analysis/basic-concepts/event-types/custom-alerts
+https://www.dynatrace.com/support/help/dynatrace-api/environment-api/events-v2/post-event
+i.e. 
+```(bash)
+/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/simulate-problem.sh "Critical Performance Issue" PERFORMANCE_EVENT
+```
+
 ### Keptn remediation workflow
 Instead of waiting for a problem to be detected by Dynatrace to test your integration you can use the keptn API to send fake problem events to test your workflow.
-
-i.e. 
+i.e.
+```(bash)
+/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh "Critical Performance Issue" PERFORMANCE_EVENT
+```
 
 ### Keptn webhook service
 
