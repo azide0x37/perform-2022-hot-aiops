@@ -31,6 +31,8 @@ if [ "$DT_CREATE_ENV_TOKENS" != "false" ]; then
     --header "Authorization: Api-Token $DT_CLUSTER_TOKEN" \
     --header "Content-Type: application/json" \
     --data-raw "${paas_token_body}")
+    echo "response "
+    echo $DT_PAAS_TOKEN_RESPONSE
     DT_PAAS_TOKEN=$(echo $DT_PAAS_TOKEN_RESPONSE | jq -r '.token' )
 
     printf "Creating API Token for Dynatrace Environment ${DT_ENV_URL}\n\n"
@@ -53,6 +55,8 @@ if [ "$DT_CREATE_ENV_TOKENS" != "false" ]; then
     --header "Authorization: Api-Token $DT_CLUSTER_TOKEN" \
     --header "Content-Type: application/json" \
     --data-raw "${api_token_body}")
+    echo "response "
+    echo $DT_API_TOKEN_RESPONSE
     DT_API_TOKEN=$(echo $DT_API_TOKEN_RESPONSE | jq -r '.token' )
 fi
 
