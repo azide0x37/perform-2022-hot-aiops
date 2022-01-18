@@ -22,7 +22,7 @@
     - Configure gitea as our git repository manager for the remediation project
     - Create a repository with a remediation playbook to use with Ansible AWX.
 
-1.  Execute ```source ~/.bashrc``` to refresh your bash command before executing the next command.
+1.  IMPORTANT! Execute ```source ~/.bashrc``` to refresh your bash command    before executing the next command.
     From your console run 
     ```(bash)
     sudo -E bash /home/$shell_user/perform-2022-hot-aiops/install/setup-5.sh 

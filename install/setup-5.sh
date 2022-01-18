@@ -65,7 +65,7 @@ sleep 10
 kubectl -n $AWX_NAMESPACE rollout status deployment/awx-aiops
 
 echo "Running playbook to configure AWX"
-ansible-playbook /tmp/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_domain ingress_domain=$ingress_domain awx_admin_username=$login_user dt_environment_url=$DT_ENV_URL \
+ansible-playbook /home/$shell_user/perform-2022-hot-aiops/install/awx_config.yml --extra-vars="awx_url=http://awx.$ingress_domain ingress_domain=$ingress_domain awx_admin_username=$login_user dt_environment_url=$DT_ENV_URL \
   dynatrace_api_token=$DT_API_TOKEN custom_domain_protocol=http shell_user=$shell_user shell_password=$shell_password keptn_api_token=$KEPTN_API_TOKEN"
 
 
