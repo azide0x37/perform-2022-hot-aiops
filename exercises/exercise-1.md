@@ -25,7 +25,7 @@ using the web terminal or a ssh client log into your VM. (Check the provided cre
 ## Step 2 - Install the first services
 
 1. Make sure to have the required variables available. Run `env` and 
-   check for the variable 
+   check for the variable `PROGRESS_CONTROL=3`
 
    If not present run `source ~/.bashrc` to refresh your variables before running the next script.
 1. From your console run 

@@ -31,6 +31,7 @@ export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 echo "Installing Helm"
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+sleep 30
 helm repo add stable https://charts.helm.sh/stable
 helm repo add incubator https://charts.helm.sh/incubator
 helm repo add gitea-charts https://dl.gitea.io/charts/
