@@ -74,7 +74,7 @@ echo "Genererate auth string for dashboard"
 htpasswd -b -c /tmp/auth $login_user $login_password
 authb64encoded=$(cat /tmp/auth | base64)
 
-helm upgrade -i ace-dashboard /tmp/dashboard-helm-chart --namespace dashboard --create-namespace --set domain=$ingress_domain \
+helm upgrade -i ace-dashboard /home/$shell_user/perform-2022-hot-aiops/install/dashboard-helm-chart --namespace dashboard --create-namespace --set domain=$ingress_domain \
   --set image=dynatraceace/ace-box-dashboard:1.0.0 --set env.GITEA_URL=http://$gitea_domain --set env.GITEA_USER=$git_user \
   --set env.GITEA_PASSWORD=$git_password --set env.GITEA_PAT=$gitea_pat --set env.AWX_URL=http://awx.$ingress_domain \
   --set env.AWX_USER=$login_user --set env.AWX_PASSWORD=$login_password --set env.KEPTN_API_URL=$KEPTN_ENDPOINT \

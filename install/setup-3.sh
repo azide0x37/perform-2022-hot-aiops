@@ -26,7 +26,7 @@ git_repo="auto-remediation"
 ##########################################
 #  INSTALL KEPTN CLI AND CONTROL PLANE   #
 ##########################################
-echo "Installing keptn"
+echo "Installing keptn  ##############################"
 curl -sL https://get.keptn.sh | KEPTN_VERSION=$keptn_version bash
 helm upgrade keptn keptn --install --wait --timeout 10m --version=$keptn_version --create-namespace --namespace=keptn \
   --set=continuous-delivery.enabled=$continuous_delivery,control-plane.apiGatewayNginx.type=$nginx_service_type --repo="https://storage.googleapis.com/keptn-installer"
@@ -35,7 +35,7 @@ helm upgrade keptn keptn --install --wait --timeout 10m --version=$keptn_version
 #   Install ingress-nginx    #
 ##############################
 
-echo "Installing ingress-nginx"
+echo "Installing ingress-nginx ###########################"
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace --wait --version 3.30.0 \

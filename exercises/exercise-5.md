@@ -28,11 +28,14 @@ i.e.
 
 ### Keptn remediation workflow
 Instead of waiting for a problem to be detected by Dynatrace to test your integration you can use the keptn API to send fake problem events to test your workflow.
-i.e.
+i.e. to open a problem
 ```(bash)
-/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh "Critical Performance Issue" PERFORMANCE_EVENT
+/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh "OPEN"
 ```
-
+i.e. to close a problem
+```(bash)
+/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh "CLOSED"
+```
 ### Keptn webhook service
 
 ### Remediation script/service 

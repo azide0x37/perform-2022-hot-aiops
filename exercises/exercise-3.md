@@ -25,12 +25,16 @@
       ![webhook](./images/webhook-service.png)
 
 1. Fill the form with the values from step 2. 
+   (custom payload)
+   ```
+   {\"extra_vars\":{\"event_id\":\"{{.id}}\",\"type\":\"{{.type}}\",\"sh_keptn_context\":\"{{.shkeptncontext}}\",\"dt_pid\":\"{{.data.PID}}\",\"keptn_project\":\"{{.data.project}}\",\"keptn_service\":\"{{.data.service}}\",\"keptn_stage\":\"{{.data.stage}}\"}}
+   ```   
    ![webhook-content](./images/webhook-content.png)
 
 1. (Temporal) Fix the webhook file. 
    There is a bug in the webhook service in Keptn, so we need to fix the way the Custom payload of the service is store. In order to do it, navigate to Gitea and locate the `webhook/webhook.yaml` file inside `easytravel` repo.
 
-   Replace the body in the file with the body from the step 1. (Note: The original content has /// triple scape characters, the replace content fixes this issue)
+   Replace the body in the file with the body from the step 1. (Note: The original content has /// triple escape characters,  replacing the content fixes this issue)
    ![webhook-body](./images/webhook-body.png)
 ---
 [Next exercise](./exercise-4.md)
