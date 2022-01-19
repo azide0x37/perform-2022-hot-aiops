@@ -1,21 +1,16 @@
-# Exercise 6 - Implement a remediation pipeline
+# Exercise 6 (optional) - Implement a remediation pipeline
 
 Use the concepts from the previous exercise and implement a remediation pipeline.
+Key points:
 
-1. To trigger a problem in dynatrace use 
-```(bash)
-/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/simulate-problem.sh "Critical Performance Issue" PERFORMANCE_EVENT
-```
-2. Configure the alert profile and problem notification to send a notification to Cloud Automation. (you can copy the same info as the previous exercise)
-
-
-
-
-
-## Add second remediation step
-Add a new remedation webhook and a new quality gate evaluation to measure the quality of the service after the execution.
-[Next](./exercise-6.md)
+1. Configure an alerting profile and problem remediation to send a `auto_healing_disk` as problem type.
+1. Configure a webhook in Keptn to be trigger on `clean_disk` and send a message to a mock webhook. (https://webhook.site/)
+1. Modify the script `keptn_event_finished.sh` to send a clean_disk finished event when executed with a failure as result.
+1. Implement a quality gate to evaluate the health of the application. Since there is no running application for this example, you can include an SLI without any objectives.
+1. Configure a webhook in Keptn to be trigger on `escalate_human` and send a message to a mock webhook. (https://webhook.site/)
+1. Trigger the entire workflow by sending a fake problem using Dynatrace API (create_problem.sh) script.
 
 
-You can use [https://webhook.site/](https://webhook.site/) to receive the webhook request and curl or postman to send the remediation end event
+
+
 

@@ -7,10 +7,8 @@ The solution has the following components:
 
 1. Dynatrace problem detection
 1. Keptn remediation workflow
-1. Keptn webhook service
 1. Remediation script/service 
 1. Quality gate evaluation
-1. Escalation script/service
 
 In order to be able to develop and iterate multiple times we need a way to test each component isolated from the rest of the architecture. 
 
@@ -30,17 +28,50 @@ i.e.
 Instead of waiting for a problem to be detected by Dynatrace to test your integration you can use the keptn API to send fake problem events to test your workflow.
 i.e. to open a problem
 ```(bash)
-/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh "OPEN"
+/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh
 ```
-i.e. to close a problem
+i.e. to close a problem. Copy the file keptn_event.sh as keptn_event_finished.sh
 ```(bash)
-/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh "CLOSED"
+cp /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event_finished.sh
 ```
-### Keptn webhook service
+and replace the last part of the event `triggered` for `finished`. 
+```(bash)
+/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event_finished.sh 
+```
+Sample of the final data payload
+```
+'{
+       "specversion":"1.0",
+       "source":"manual",
+       "id":"100",
+       "time":"",
+       "contenttype":"application/json",
+       "type": "sh.keptn.event.production.auto_healing_disk.finished",
+       "data": {
+           "State":"closed",
+           "ProblemID":"100",
+           "PID":"100",
+           "ProblemTitle":"Resource problem demo",
+           "ProblemURL":"demo.live",
+           "ProblemDetails":"", 
+           "Tags":"demo",
+            "ImpactedEntities":"",
+            "ImpactedEntity":"",
+            "project":"easytravel",
+            "stage":"production",
+           "service":"allproblems"
+           }
+        }' 
+```
+In order to test the keptn webhook service you can create a mock subscription using services like https://webhook.site/. This would help you validate the contents of the payload and troubleshoot any content problems.
 
 ### Remediation script/service 
+This part depends on the actual remediation action. It can be a simple script execution or a complex integration with a third party service. For the previous part of the lab we use AWX, you can test it by running manually the remediation script from the AWX UI.
 
 ### Quality gate evaluation
+This is another full HOT session that you can learn more about. In order to keep this session focus you can use a simple SLI definition without SLO objetives, this way all the evaluations would return ok.
 
-### Escalation script/service
+If you want to test a failure you can always use a SLO file with fake objectives.
+
+
 
