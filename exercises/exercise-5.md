@@ -1,4 +1,6 @@
 # Exercise 5 - Development workflow
+
+*** Disclaimer: Keptn with Webhooks is in Beta as January 14th.
 The goal for this second part of the lab is to learn how to develop new remediation workflows by ***testing each part of the process independently*** and then assembling everything into a single workflow.
 
 ## Step 1 - Identify the components
@@ -26,44 +28,60 @@ i.e.
 
 ### Keptn remediation workflow
 Instead of waiting for a problem to be detected by Dynatrace to test your integration you can use the keptn API to send fake problem events to test your workflow.
-i.e. to open a problem
+1. To open a problem modify:
+```(bash)
+nano /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh
+```
+and change the line that says ` "stage":"production"` to `"stage":"production-disk"` and event type from `sh.keptn.event.production` to `sh.keptn.event.production-disk`.
+
+Save the changes and then run
 ```(bash)
 /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh
 ```
-i.e. to close a problem. Copy the file keptn_event.sh as keptn_event_finished.sh
+
+2. To close a problem. Copy the file keptn_event.sh as keptn_event_finished.sh
 ```(bash)
 cp /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event_finished.sh
 ```
-and replace the last part of the event `triggered` for `finished`. 
-```(bash)
-/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event_finished.sh 
-```
-Sample of the final data payload
+Replace the data payload with the following content 
 ```
 '{
        "specversion":"1.0",
        "source":"manual",
-       "id":"100",
-       "time":"",
-       "contenttype":"application/json",
-       "type": "sh.keptn.event.production.auto_healing_disk.finished",
+       "type": "sh.keptn.event.clean_disk.finished",
+       "datacontenttype": "application/json",
+       "triggeredid":"0ee31b51-7902-426d-87ae-f58fb0617bec", 
+       "shkeptncontext":"9c229691-0ec1-4e06-a306-9240488b1403",
        "data": {
-           "State":"closed",
-           "ProblemID":"100",
-           "PID":"100",
-           "ProblemTitle":"Resource problem demo",
-           "ProblemURL":"demo.live",
-           "ProblemDetails":"", 
-           "Tags":"demo",
-            "ImpactedEntities":"",
-            "ImpactedEntity":"",
-            "project":"easytravel",
-            "stage":"production",
-           "service":"allproblems"
+           "project":"easytravel",
+           "stage":"production-disk",
+           "service":"allproblems",
+           "status": "succeeded",
+           "message": "manual remediation completed",
+           "result":"pass",
+           "action": {
+             "status":"succeeded", 
+             "result":"pass" 
+           }
            }
         }' 
 ```
-In order to test the keptn webhook service you can create a mock subscription using services like https://webhook.site/. This would help you validate the contents of the payload and troubleshoot any content problems.
+Then replace the values for this fields
+```
+ "action": {
+             "status":"succeeded", //could also be errored or succeeded
+             "result":"pass", //could also be failed or pass
+           },
+           "triggeredid":"7a119f55-4e64-47df-8d10-b68041118d7f", //check this id in the keptn UI
+           "shkeptncontext":"54d0d7ca-2109-48ed-aba3-69ebbf62ce20" //update this with the keptn context returned in the initial trigger
+```
+
+And execute the event
+```(bash)
+/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event_finished.sh 
+```
+
+In order to test the keptn webhook service you can create a mock subscription using services like https://webhook.site/ or https://pipedream.com/. This would help you validate the contents of the payload and troubleshoot any content problems.
 
 ### Remediation script/service 
 This part depends on the actual remediation action. It can be a simple script execution or a complex integration with a third party service. For the previous part of the lab we use AWX, you can test it by running manually the remediation script from the AWX UI.
