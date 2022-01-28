@@ -30,7 +30,7 @@ PAYLOAD='
   "eventType": "'$EVENT_TYPE'",
   "source" : "Demo Script",
   "description" : "There was a problem detected which should trigger the Cloud Automation Sequence",
-  "entitySelector": "type(SERVICE),tag(keptn_project:casdemo,keptn_service:casdemoapp,keptn_stage:production)",
+  "entitySelector": "type(SERVICE),tag(app:easy-travel-server)",
   "properties":{
     "Triggered by": "Demo Script"
   }

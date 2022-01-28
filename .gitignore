@@ -40,3 +40,4 @@ terraform-demo/temp1/
 install/monaco/.logs/
 install/monaco/demo/
 test.sh
+install/monaco/env-demo.yaml

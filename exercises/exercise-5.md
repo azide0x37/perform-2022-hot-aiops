@@ -1,6 +1,7 @@
 # Exercise 5 - Development workflow
 
-*** Disclaimer: Keptn with Webhooks is in Beta as January 14th.
+**Disclaimer: Keptn with Webhooks is in beta as January 2022**
+
 The goal for this second part of the lab is to learn how to develop new remediation workflows by ***testing each part of the process independently*** and then assembling everything into a single workflow.
 
 ## Step 1 - Identify the components
@@ -17,13 +18,14 @@ In order to be able to develop and iterate multiple times we need a way to test 
 ### Dynatrace problem detection 
 This is probably the most difficult component to test since it would require an application with problems that can be trigger manually. Fortunately, at Dynatrace we have Easytravel (https://confluence.dynatrace.com/community/display/DL/easyTravel).
 
-You can also develop your own test application based on techical articles depending on the programming language and the type of problem to simulate i.e. (https://michaelscodingspot.com/ways-to-cause-memory-leaks-in-dotnet/)
+You can also develop your own test application based on techical articles depending on the programming language and the type of problem to recreate i.e. (https://michaelscodingspot.com/ways-to-cause-memory-leaks-in-dotnet/)
 
 Another option would be to use Dynatrace API to send a custom alert https://www.dynatrace.com/support/help/how-to-use-dynatrace/problem-detection-and-analysis/basic-concepts/event-types/custom-alerts
 https://www.dynatrace.com/support/help/dynatrace-api/environment-api/events-v2/post-event
-i.e. 
+
+This is the option we are going to use for this exercise. Run the following script and check Dynatrace > services > easyTravel
 ```(bash)
-/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/simulate-problem.sh "Critical Performance Issue" PERFORMANCE_EVENT
+/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/create_problem.sh "Critical Performance Issue" PERFORMANCE_EVENT
 ```
 
 ### Keptn remediation workflow
