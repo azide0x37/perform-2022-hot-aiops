@@ -25,59 +25,31 @@ https://www.dynatrace.com/support/help/dynatrace-api/environment-api/events-v2/p
 
 This is the option we are going to use for this exercise. Run the following script and check Dynatrace > services > easyTravel
 ```(bash)
-/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/create_problem.sh "Critical Performance Issue" PERFORMANCE_EVENT
+  /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/create_problem.sh "Critical Performance Issue" PERFORMANCE_EVENT
 ```
 
 ### Keptn remediation workflow
 Instead of waiting for a problem to be detected by Dynatrace to test your integration you can use the keptn API to send fake problem events to test your workflow.
-1. To open a problem modify:
+1. To create a new keptn event run
 ```(bash)
-nano /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh
+  /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh
 ```
-and change the line that says ` "stage":"production"` to `"stage":"production-disk"` and event type from `sh.keptn.event.production` to `sh.keptn.event.production-disk`.
+(since you haven't subscribe any tasks to this new event, it will automatically return a failure).
 
-Save the changes and then run
-```(bash)
-/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh
-```
+2. To close a problem use the script keptn_event_finished.sh
 
-2. To close a problem. Copy the file keptn_event.sh as keptn_event_finished.sh
-```(bash)
-cp /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event_finished.sh
+First replace the values for this fields
 ```
-Replace the data payload with the following content 
+           "triggeredid":"7a119f55-4e64-47df-8d10-b68041118d7f", //check this id in the keptn UI
+           "shkeptncontext":"54d0d7ca-2109-48ed-aba3-69ebbf62ce20" //update this with the keptn context returned in the initial trigger
 ```
-'{
-       "specversion":"1.0",
-       "source":"manual",
-       "type": "sh.keptn.event.clean_disk.finished",
-       "datacontenttype": "application/json",
-       "triggeredid":"0ee31b51-7902-426d-87ae-f58fb0617bec", 
-       "shkeptncontext":"9c229691-0ec1-4e06-a306-9240488b1403",
-       "data": {
-           "project":"easytravel",
-           "stage":"production-disk",
-           "service":"allproblems",
-           "status": "succeeded",
-           "message": "manual remediation completed",
-           "result":"pass",
-           "action": {
-             "status":"succeeded", 
-             "result":"pass" 
-           }
-           }
-        }' 
-```
-Then replace the values for this fields
+Depending on the result you want to simulate you can change the block 
 ```
  "action": {
              "status":"succeeded", //could also be errored or succeeded
              "result":"pass", //could also be failed or pass
            },
-           "triggeredid":"7a119f55-4e64-47df-8d10-b68041118d7f", //check this id in the keptn UI
-           "shkeptncontext":"54d0d7ca-2109-48ed-aba3-69ebbf62ce20" //update this with the keptn context returned in the initial trigger
 ```
-
 And execute the event
 ```(bash)
 /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event_finished.sh 
@@ -89,9 +61,11 @@ In order to test the keptn webhook service you can create a mock subscription us
 This part depends on the actual remediation action. It can be a simple script execution or a complex integration with a third party service. For the previous part of the lab we use AWX, you can test it by running manually the remediation script from the AWX UI.
 
 ### Quality gate evaluation
-This is another full HOT session that you can learn more about. In order to keep this session focus you can use a simple SLI definition without SLO objetives, this way all the evaluations would return ok.
+This is another full HOT session topic. You can learn more about quality gates and SLO/SLI definitions in the following link https://www.dynatrace.com/support/help/how-to-use-dynatrace/cloud-automation/release-validation/get-started-with-quality-gates.
 
-If you want to test a failure you can always use a SLO file with fake objectives.
-
+If you want to try runnning a quality gate evaluation on demand run
+```
+keptn trigger evaluation --project=easytravel --stage=production --service=allproblems --timeframe=60m --labels=executedBy=manual
+```
 
 

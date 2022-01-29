@@ -1,7 +1,7 @@
 ################################
 #      SETUP 9                 #
 ################################
-echo "############### SETUP 9 - Webhook AWX automation ###########################"
+echo "############### SETUP 9 - Webhook automation ###########################"
 
 ###Needs some check, fails on the payload for the webhook (beta API)
 
