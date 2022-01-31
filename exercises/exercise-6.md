@@ -20,7 +20,7 @@ Key points to implement:
 
 1. Configure an alerting profile and problem remediation in Dynatrace to send a `auto_healing_disk` as problem type. (Check the already configure alerting profile and problem remediation for reference).
 1. Configure a webhook in Keptn to be triggered on `clean_disk` and send a message to a mock webhook. (you can use services such as https://webhook.site/ or https://pipedream.com/)
-1. Modify the script `keptn_event_finished.sh` to send a `clean_disk` finished event. The action block should return a `succeeded` status with a `failure` result to simulate a call to a service that wasn't able to remediate the problem.
+1. Use the script `keptn_event_finished.sh` to send a `clean_disk` finished event. The action block should return a `succeeded` status with `failed` as a result to simulate a call to a service that wasn't able to remediate the problem.
     ```
     "action": {
                 "status":"succeeded", //could also be errored or succeeded

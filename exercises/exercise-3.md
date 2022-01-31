@@ -25,7 +25,7 @@
       ![webhook](./images/webhook-service.png)
 
 1. Fill the form with the values from step 2. Make sure to **copy the url** with the ending slash `.../launch/`
-   (custom payload)
+   
    ```
    {\"extra_vars\":{\"event_id\":\"{{.id}}\",\"type\":\"{{.type}}\",\"sh_keptn_context\":\"{{.shkeptncontext}}\",\"dt_pid\":\"{{.data.PID}}\",\"keptn_project\":\"{{.data.project}}\",\"keptn_service\":\"{{.data.service}}\",\"keptn_stage\":\"{{.data.stage}}\"}}
    ```   

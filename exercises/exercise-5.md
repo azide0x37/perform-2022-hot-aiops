@@ -1,6 +1,6 @@
 # Exercise 5 - Development workflow
 
-**Disclaimer: Keptn with Webhooks is in beta as January 2022**
+**Disclaimer: Some Keptn funcitonalities are in beta as January 2022**
 
 The goal for this second part of the lab is to learn how to develop new remediation workflows by ***testing each part of the process independently*** and then assembling everything into a single workflow.
 
@@ -13,54 +13,64 @@ The solution has the following components:
 1. Remediation script/service 
 1. Quality gate evaluation
 
-In order to be able to develop and iterate multiple times we need a way to test each component isolated from the rest of the architecture. 
+To accelerate the development process we need a way to test each component isolated from the rest of the architecture. 
 
-### Dynatrace problem detection 
-This is probably the most difficult component to test since it would require an application with problems that can be trigger manually. Fortunately, at Dynatrace we have Easytravel (https://confluence.dynatrace.com/community/display/DL/easyTravel).
+## 1. Dynatrace problem detection 
+This is probably the most difficult component to test since it would require an application with problems that can be trigger manually. Fortunately, at Dynatrace we have Easytravel (https://confluence.dynatrace.com/community/display/DL/easyTravel), this app includes common performance scenarios that can be trigger on demand.
 
-You can also develop your own test application based on techical articles depending on the programming language and the type of problem to recreate i.e. (https://michaelscodingspot.com/ways-to-cause-memory-leaks-in-dotnet/)
+Another alternative is to develop your own test application based on techical articles depending on the programming language and the type of problem to recreate i.e. (https://michaelscodingspot.com/ways-to-cause-memory-leaks-in-dotnet/)
 
-Another option would be to use Dynatrace API to send a custom alert https://www.dynatrace.com/support/help/how-to-use-dynatrace/problem-detection-and-analysis/basic-concepts/event-types/custom-alerts
-https://www.dynatrace.com/support/help/dynatrace-api/environment-api/events-v2/post-event
+Another option would be to use Dynatrace API to send a custom alert. Some reference information on this topic: 
+- https://www.dynatrace.com/support/help/how-to-use-dynatrace/problem-detection-and-analysis/basic-concepts/event-types/custom-alerts
+- https://www.dynatrace.com/support/help/dynatrace-api/environment-api/events-v2/post-event
 
-This is the option we are going to use for this exercise. Run the following script and check Dynatrace > services > easyTravel
+Exercise:
+
+Run the following script and check in the `Dynatrace UI > services > EasyTravelWebserver:8079`
 ```(bash)
   /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/create_problem.sh "Critical Performance Issue" PERFORMANCE_EVENT
 ```
-
-### Keptn remediation workflow
+This will create a custom problem notification in the specified Dynatrace service (we are selecting the service based on the tag `app:easy-travel-server`)
+## 2.Keptn remediation workflow
 Instead of waiting for a problem to be detected by Dynatrace to test your integration you can use the keptn API to send fake problem events to test your workflow.
 1. To create a new keptn event run
-```(bash)
-  /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh
-```
-(since you haven't subscribe any tasks to this new event, it will automatically return a failure).
+    ```(bash)
+      /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event.sh
+    ```
+    This would trigger an event type `sh.keptn.event.production-disk.auto_healing_disk.triggered` that will execute the workflow 
+    ```(yaml)
+        - name: "production-disk"
+      sequences:
+      - name: "auto_healing_disk"
+        tasks:
+        - name: clean_disk
+        - name: evaluation
+          triggeredAfter: "2m"
+          properties:
+            timeframe: "2m"
+      - name: "auto_healing_disk_failed"
+        triggeredon: auto_healing_disk result = "fail"
+        tasks:
+        - name: escalate_human
+    ```
+    (since you haven't subscribe any tasks to this new event, it will automatically return a failure).
+1. To avoid returning a failure and test the keptn webhook service you can create a mock subscription using services like https://webhook.site/ or https://pipedream.com/. This would help you validate the contents of the payload and troubleshoot any format issues.
+**Tip: You can use the following content in the body to get the keptn_context and event_id as you will need those values to close the task ```"event_id":{{.id}},"sh_keptn_context":"{{.shkeptncontext}}"```
+![webhook-d](./images/webhook-dummy-sub2.png)
+![webhook-s](./images/webhook-dummy-info.png)
+1. To close a problem use the script `keptn_event_finished.sh`. It requires 3 parameters:
+   1. triggeredid: Id of the event (check it from the content payload in the webhook response).
+   2. shkeptncontext: Keptn context id. This is an internal ID required for keptn.
+   3. Result: Can be `pass` or `failed`
+- Execute the script using:
+    ```(bash)
+    /home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event_finished.sh "triggerid" "shkeptncontext" "result"
+    ```
 
-2. To close a problem use the script keptn_event_finished.sh
+## 3. Remediation script/service 
+This part depends on the actual remediation action. It can be a simple script execution or a complex integration with a third party service. For the previous part of the lab we use AWX, you can test it by running manually the `remediation` script from the AWX UI.
 
-First replace the values for this fields
-```
-           "triggeredid":"7a119f55-4e64-47df-8d10-b68041118d7f", //check this id in the keptn UI
-           "shkeptncontext":"54d0d7ca-2109-48ed-aba3-69ebbf62ce20" //update this with the keptn context returned in the initial trigger
-```
-Depending on the result you want to simulate you can change the block 
-```
- "action": {
-             "status":"succeeded", //could also be errored or succeeded
-             "result":"pass", //could also be failed or pass
-           },
-```
-And execute the event
-```(bash)
-/home/$shell_user/perform-2022-hot-aiops/exercises/scripts/keptn_event_finished.sh 
-```
-
-In order to test the keptn webhook service you can create a mock subscription using services like https://webhook.site/ or https://pipedream.com/. This would help you validate the contents of the payload and troubleshoot any content problems.
-
-### Remediation script/service 
-This part depends on the actual remediation action. It can be a simple script execution or a complex integration with a third party service. For the previous part of the lab we use AWX, you can test it by running manually the remediation script from the AWX UI.
-
-### Quality gate evaluation
+## 4. Quality gate evaluation
 This is another full HOT session topic. You can learn more about quality gates and SLO/SLI definitions in the following link https://www.dynatrace.com/support/help/how-to-use-dynatrace/cloud-automation/release-validation/get-started-with-quality-gates.
 
 If you want to try runnning a quality gate evaluation on demand run

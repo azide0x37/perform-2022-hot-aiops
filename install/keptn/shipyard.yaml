@@ -14,7 +14,11 @@ spec:
           properties:
                 timeframe: "2m"
       - name: "auto_healing_memory_remediation_failed"
-        triggeredon: auto_healing_memory result = "fail"
+        triggeredOn:
+            - event: "production.auto_healing_memory.finished"
+              selector:
+                match:
+                  evaluation.result: "fail"
         tasks:
         - name: restart
         - name: evaluation
@@ -31,7 +35,11 @@ spec:
           properties:
             timeframe: "2m"
       - name: "auto_healing_disk_failed"
-        triggeredon: auto_healing_disk result = "fail"
+        triggeredOn:
+            - event: "production-disk.auto_healing_disk.finished"
+              selector:
+                match:
+                  evaluation.result: "fail"
         tasks:
         - name: escalate_human
 
