@@ -8,11 +8,11 @@
         incubator       https://charts.helm.sh/incubator          
         stable          https://charts.helm.sh/stable
     ```
-    If not you can add the repos for helm by running 
+    If not, you can add the repositories for helm by running 
     ```(bash)
-        helm repo add stable https://charts.helm.sh/stable
-        helm repo add incubator https://charts.helm.sh/incubator
-        helm repo add gitea-charts https://dl.gitea.io/charts/
+        sudo helm repo add stable https://charts.helm.sh/stable
+        sudo helm repo add incubator https://charts.helm.sh/incubator
+        sudo helm repo add gitea-charts https://dl.gitea.io/charts/
     ```
     From your console run
     ```(bash)

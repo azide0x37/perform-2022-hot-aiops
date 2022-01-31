@@ -1,0 +1,37 @@
+{
+ "description": null,
+ "entitySelectorBasedRules": [],
+ "metadata": {
+  "clusterVersion": "1.234.46.20220125-132539",
+  "configurationVersions": [],
+  "currentConfigurationVersions": [
+   "7"
+  ]
+ },
+ "name": "{{.name}}",
+ "rules": [
+  {
+   "conditions": [
+    {
+     "comparisonInfo": {
+      "caseSensitive": true,
+      "negate": false,
+      "operator": "BEGINS_WITH",
+      "type": "STRING",
+      "value": "EasyTravelWebserver:8079"
+     },
+     "key": {
+      "attribute": "SERVICE_NAME",
+      "type": "STATIC"
+     }
+    }
+   ],
+   "enabled": true,
+   "propagationTypes": [
+    "SERVICE_TO_PROCESS_GROUP_LIKE"
+   ],
+   "type": "SERVICE",
+   "valueFormat": "easy-travel-server"
+  }
+ ]
+}

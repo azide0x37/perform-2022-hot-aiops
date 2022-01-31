@@ -21,11 +21,11 @@
  1. Create the webhook in Keptn.
       - Get into the keptn bridge and select the easytravel project. 
       - Select the webhook menu from the left bar 
-      - Select the webhook service and add a subscription
+      - Select the webhook service and add a subscription 
       ![webhook](./images/webhook-service.png)
 
-1. Fill the form with the values from step 2. 
-   (custom payload)
+1. Fill the form with the values from step 2. Make sure to **copy the url** with the ending slash `.../launch/`
+   
    ```
    {\"extra_vars\":{\"event_id\":\"{{.id}}\",\"type\":\"{{.type}}\",\"sh_keptn_context\":\"{{.shkeptncontext}}\",\"dt_pid\":\"{{.data.PID}}\",\"keptn_project\":\"{{.data.project}}\",\"keptn_service\":\"{{.data.service}}\",\"keptn_stage\":\"{{.data.stage}}\"}}
    ```   

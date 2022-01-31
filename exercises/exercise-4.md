@@ -1,5 +1,7 @@
 # Exercise 4 - Trigger initial remediation
-
+1. Before triggering the problem we will disable frequent issue detection in Dynatrace to allow multiple tests using the same problem. (by default Dynatrace learns about the previous issues and avoids alerting again if it's a frequent issue. This would block our auto remediation process from being triggered).
+ - Navigate into Dynatrace UI > Settings > Anomaly detection > Frequent issue detection and disable the feature for services and infraestructure.
+ ![playbook-trigger](./images/disable-feature.png)
 1. Navigate into the AWX UI. (you can use the dashboard to get the link and credentials)
 1. Select the template menu from the left 
 1. Run the playbook `Trigger Memory Leak on Backend` (click on the rocket icon)
